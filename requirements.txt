@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+jinja2
+python-multipart
+python-dotenv
+httpx
+email-validator
+# passlib dependency removed
+bcrypt==3.2.2
+python-jose[cryptography]

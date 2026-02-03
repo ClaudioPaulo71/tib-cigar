@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: tib_saas_app
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data  # Persist SQLite DB
+      - ./static/uploads:/app/static/uploads # Persist user uploads
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:///data/tib_saas.db
+
+volumes:
+  data:
