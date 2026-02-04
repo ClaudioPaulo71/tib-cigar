@@ -13,9 +13,25 @@ class GarageService:
     def __init__(self, session: Session):
         self.session = session
 
-    def list_vehicles(self, user: User) -> List[Veiculo]:
-        statement = select(Veiculo).where(Veiculo.user_id == user.id).options(selectinload(Veiculo.alertas))
-        return self.session.exec(statement).all()
+    def list_vehicles(self, user: User, include_all: bool = False) -> List[Veiculo]:
+        stmt = select(Veiculo).where(Veiculo.user_id == user.id).options(selectinload(Veiculo.alertas))
+        if not include_all:
+             stmt = stmt.where(Veiculo.status == "active")
+        return self.session.exec(stmt).all()
+
+    def dispose_vehicle(self, user: User, vehicle_id: int, status: str, date_obj, sale_value: float = None):
+        vehicle = self.get_vehicle(user, vehicle_id)
+        if not vehicle:
+            return None
+        
+        vehicle.status = status
+        vehicle.data_baixa = date_obj
+        if sale_value:
+            vehicle.valor_venda = sale_value
+            
+        self.session.add(vehicle)
+        self.session.commit()
+        return vehicle
 
     def get_dashboard_stats(self, user: User) -> dict:
         vehicles = self.list_vehicles(user)

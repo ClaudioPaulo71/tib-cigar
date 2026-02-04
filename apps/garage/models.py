@@ -16,7 +16,12 @@ class Veiculo(SQLModel, table=True):
     # --- NOVOS CAMPOS ---
     valor_estimado: Optional[float] = Field(default=0.0) # Para o futuro gráfico financeiro
     foto: Optional[str] = None # Caminho da imagem da capa
-    # --------------------
+    
+    # --- LIFECYCLE ---
+    status: str = Field(default="active") # active, sold, donated, discarded
+    data_baixa: Optional[date] = None
+    valor_venda: Optional[float] = None
+    # -----------------
 
     user_id: Optional[int] = Field(foreign_key="user.id", default=None)
     user: Optional["User"] = Relationship(back_populates="veiculos")

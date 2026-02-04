@@ -123,3 +123,20 @@ def registrar_sessao(
         return "Unauthorized"
 
     return RedirectResponse(url=f"/range/{gun_id}", status_code=303)
+
+# 6. Rota para DAR BAIXA (Dispose)
+@router.post("/{gun_id}/dispose")
+def baixar_arma(
+    gun_id: int,
+    status: str = Form(...), # sold, donated, discarded
+    date_str: str = Form(..., alias="date"),
+    sale_price: float = Form(default=None),
+    service: RangeService = Depends(get_service),
+    user: User = Depends(require_user)
+):
+    data_formatada = date.fromisoformat(date_str)
+    service.dispose_gun(
+        user=user, gun_id=gun_id, status=status,
+        date_obj=data_formatada, sale_price=sale_price
+    )
+    return RedirectResponse(url="/range", status_code=303)

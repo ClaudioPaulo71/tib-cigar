@@ -70,12 +70,15 @@
                         class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent transform hover:scale-105 transition">
                         TIB<span class="font-light text-white">SaaS</span>
                     </a>
-                    <div class="ml-12 flex items-baseline space-x-6">
-                        <a href="/garage" class="nav-link">Garage</a>
-                        <a href="/range" class="nav-link">Armory</a>
+                    <div class="hidden md:block ml-12">
+                        <div class="flex items-baseline space-x-6">
+                            <a href="/garage" class="nav-link">Garage</a>
+                            <a href="/range" class="nav-link">Armory</a>
+                            <a href="/analytics" class="nav-link text-emerald-400 hover:text-emerald-300">Command</a>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-4">
                     {% if user %}
                     <div class="flex items-center gap-3 bg-slate-900/50 px-3 py-1.5 rounded-full border border-white/5">
                         <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -92,6 +95,66 @@
                     </a>
                     {% endif %}
                 </div>
+
+                <!-- Premium Button (Conditional) -->
+                <!-- Ideally we inject 'settings' into templates, or check user status. For now, static link that redirects to logic -->
+                <a href="/auth/subscribe"
+                    class="hidden md:inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 shadow-lg shadow-amber-500/30 ml-4">
+                    Upgrade
+                </a>
+
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu, show/hide based on menu state. -->
+        <div class="hidden md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="/garage"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Garage</a>
+                <a href="/range"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Armory</a>
+                <a href="/analytics"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:text-white hover:bg-slate-800">Command
+                    Center</a>
+            </div>
+            <div class="pt-4 pb-4 border-t border-slate-700">
+                {% if user %}
+                <div class="flex items-center px-5">
+                    <div class="flex-shrink-0">
+                        <div
+                            class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                            {{ user.email[0] | upper }}
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium leading-none text-white">{{ user.email }}</div>
+                    </div>
+                </div>
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="/auth/logout"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-slate-400 hover:text-white hover:bg-slate-800">Sign
+                        out</a>
+                </div>
+                {% else %}
+                <div class="px-2 space-y-2">
+                    <a href="/auth/login"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-slate-400 hover:text-white hover:bg-slate-800">Login</a>
+                    <a href="/auth/register"
+                        class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Get Started</a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </nav>

@@ -85,7 +85,7 @@ def atualizar_odometro(
     service: GarageService = Depends(get_service),
     user: User = Depends(require_user)
 ):
-    service.update_odometer(user, vehicle_id, nova_km)
+    service.update_odometer(user, veiculo_id, nova_km)
     return RedirectResponse(url="/garage", status_code=303)
 
 # 5. Rota de DETALHES
@@ -134,3 +134,20 @@ def adicionar_servico(
          return "Unauthorized"
 
     return RedirectResponse(url=f"/garage/{veiculo_id}", status_code=303)
+
+# 7. Rota para DAR BAIXA (Dispose)
+@router.post("/{veiculo_id}/dispose")
+def baixar_veiculo(
+    veiculo_id: int,
+    status: str = Form(...), # sold, donated, discarded
+    data: str = Form(...),
+    valor: float = Form(default=None),
+    service: GarageService = Depends(get_service),
+    user: User = Depends(require_user)
+):
+    data_formatada = date.fromisoformat(data)
+    service.dispose_vehicle(
+        user=user, vehicle_id=veiculo_id, status=status,
+        date_obj=data_formatada, sale_value=valor
+    )
+    return RedirectResponse(url="/garage", status_code=303)

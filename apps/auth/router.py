@@ -2,14 +2,15 @@ from fastapi import APIRouter, Depends, Form, Request, Response, status
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
-from datetime import timedelta
 from database import get_session
+from apps.auth.services import AuthService
 from apps.auth.models import User
-from apps.auth.utils import verify_password, get_password_hash, create_access_token
-from config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 templates = Jinja2Templates(directory="templates")
+
+def get_service(session: Session = Depends(get_session)) -> AuthService:
+    return AuthService(session)
 
 @router.get("/register")
 def register_page(request: Request):
@@ -21,23 +22,19 @@ def register(
     email: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
-    session: Session = Depends(get_session)
+    service: AuthService = Depends(get_service)
 ):
     errors = []
     if password != confirm_password:
         errors.append("Passwords do not match")
 
-    existing_user = session.query(User).filter(User.email == email).first()
-    if existing_user:
+    if service.get_user_by_email(email):
         errors.append("Email already registered")
 
     if errors:
         return templates.TemplateResponse("auth/register.html", {"request": request, "errors": errors})
 
-    hashed_pw = get_password_hash(password)
-    new_user = User(email=email, hashed_password=hashed_pw)
-    session.add(new_user)
-    session.commit()
+    service.register_user(email, password)
     
     return RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
 
@@ -48,32 +45,41 @@ def login_page(request: Request):
 @router.post("/login")
 def login(
     request: Request,
-    response: Response,
     email: str = Form(...),
     password: str = Form(...),
-    session: Session = Depends(get_session)
+    service: AuthService = Depends(get_service)
 ):
-    user = session.query(User).filter(User.email == email).first()
-    if not user or not verify_password(password, user.hashed_password):
+    user = service.authenticate_user(email, password)
+    if not user:
         return templates.TemplateResponse("auth/login.html", {"request": request, "error": "Invalid credentials"})
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
-    
-    resp = RedirectResponse(url="/garage", status_code=status.HTTP_303_SEE_OTHER)
-    resp.set_cookie(
-        key="access_token", 
-        value=f"Bearer {access_token}", 
-        httponly=True,
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        expires=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-    )
-    return resp
+    return service.login_user(user)
 
 @router.get("/logout")
-def logout():
-    resp = RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
-    resp.delete_cookie(key="access_token")
-    return resp
+def logout(
+    service: AuthService = Depends(get_service)
+):
+    return service.logout_user()
+
+    return service.logout_user()
+
+from apps.auth.subscription_service import SubscriptionService
+from apps.auth.deps import get_current_user
+
+@router.get("/subscribe")
+def subscribe_premium(
+    request: Request,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    sub_service = SubscriptionService(session)
+    success_url = str(request.url_for('dashboard')) # Redirect to analytics after success
+    cancel_url = str(request.url_for('dashboard'))
+    
+    checkout_url = sub_service.create_checkout_session(user, success_url, cancel_url)
+    
+    if checkout_url:
+        return RedirectResponse(checkout_url, status_code=303)
+    
+    return RedirectResponse("/analytics?error=payment_config_missing", status_code=303) 
+

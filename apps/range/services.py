@@ -13,9 +13,26 @@ class RangeService:
     def __init__(self, session: Session):
         self.session = session
 
-    def list_guns(self, user: User) -> List[Gun]:
-        statement = select(Gun).where(Gun.user_id == user.id).options(selectinload(Gun.accessories))
-        return self.session.exec(statement).all()
+    def list_guns(self, user: User, include_all: bool = False) -> List[Gun]:
+        stmt = select(Gun).where(Gun.user_id == user.id)
+        if not include_all:
+            stmt = stmt.where(Gun.status == "active")
+        stmt = stmt.options(selectinload(Gun.accessories))
+        return self.session.exec(stmt).all()
+        
+    def dispose_gun(self, user: User, gun_id: int, status: str, date_obj, sale_price: float = None):
+        gun = self.get_gun(user, gun_id)
+        if not gun:
+            return None
+            
+        gun.status = status
+        gun.disposal_date = date_obj
+        if sale_price:
+            gun.sale_price = sale_price
+            
+        self.session.add(gun)
+        self.session.commit()
+        return gun
 
     def get_dashboard_stats(self, user: User) -> dict:
         guns = self.list_guns(user)

@@ -15,6 +15,11 @@ class Gun(SQLModel, table=True):
     image: Optional[str] = None
     invoice: Optional[str] = None # <--- NOVO CAMPO: Caminho da Nota Fiscal
     
+    # --- LIFECYCLE ---
+    status: str = Field(default="active") # active, sold, donated, discarded
+    disposal_date: Optional[date] = None
+    sale_price: Optional[float] = None
+    # -----------------
     user_id: Optional[int] = Field(foreign_key="user.id", default=None)
     user: Optional["User"] = Relationship(back_populates="guns")
 

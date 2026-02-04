@@ -1,6 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, date
 
 if TYPE_CHECKING:
     from apps.garage.models import Veiculo
@@ -13,5 +13,10 @@ class User(SQLModel, table=True):
     is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
+    # Monetization
+    stripe_customer_id: Optional[str] = None
+    subscription_status: str = Field(default="free") # free, active, past_due, canceled
+    subscription_end_date: Optional[date] = None
+
     veiculos: List["Veiculo"] = Relationship(back_populates="user")
     guns: List["Gun"] = Relationship(back_populates="user")

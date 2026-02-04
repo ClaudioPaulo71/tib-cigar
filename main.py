@@ -37,9 +37,14 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 2. Inclui as Rotas (Os "Apps")
+from apps.analytics.router import router as analytics_router
+from apps.auth.webhook_router import router as webhook_router
+
 app.include_router(auth_router)
 app.include_router(garage_router)
 app.include_router(range_router)
+app.include_router(analytics_router)
+app.include_router(webhook_router)
 
 # Rota raiz (Landing Page)
 @app.get("/")

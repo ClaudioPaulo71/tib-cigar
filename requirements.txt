@@ -8,4 +8,5 @@ httpx
 email-validator
 # passlib dependency removed
 bcrypt==3.2.2
-python-jose[cryptography]
+python-jose[cryptography]pydantic-settings
+stripe
