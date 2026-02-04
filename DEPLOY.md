@@ -1,52 +1,51 @@
-# Deployment Guide: TIB-SaaS (Git Workflow)
+# Deployment Guide: TIB-Cigar (Reverse Proxy)
 
-## Prerequisites
-- **VPS**: Hostinger (Ubuntu 20.04/22.04).
-- **Domain**: `tib-usa.app` → VPS IP.
-- **Git**: Installed on VPS (`apt install git`).
-- **Docker**: Installed on VPS.
+## Architecture
+- **App Port**: `8002` (Internal)
+- **Host Server**: Apache/Nginx (Handles SSL & Public Traffic on 443)
+- **Persistence**: `./data/tib_saas.db`
 
-## 1. Setup Remote (On Your Machine)
-If you haven't already linked your Github/Gitlab:
-```bash
-git remote add origin https://github.com/YOUR_USER/tib-saas.git
-git add .
-git commit -m "Deployment Ready"
-git push -u origin master
-```
-
-## 2. Prepare Server (VPS)
-SSH into your server:
-```bash
-ssh root@your_vps_ip
-```
-
-Clone the repository:
-```bash
-cd /var/www
-git clone https://github.com/YOUR_USER/tib-saas.git
-cd tib-saas
-```
-
-## 3. Configuration
-Create the production environment file:
-```bash
-cp .env.example .env
-nano .env
-```
-*Paste your production keys here (Secret Key, Stripe Live Keys).*
-
-## 4. Deploy
-Build and start the containers:
-```bash
-docker-compose up -d --build
-```
-
-**HTTPS is Automatic:** Traefik will request a certificate for `tib-usa.app`.
-
-## 5. Updates (Future)
-To update the app later, just run inside the folder:
+## 1. Quick Update (Server)
+Since you already have the repo:
 ```bash
 git pull origin master
-docker-compose up -d --build
+docker compose down --remove-orphans
+docker compose up -d --build
+```
+*The app is now running on localhost:8002.*
+
+## 2. Configure Host Proxy (Apache/Nginx)
+You need to tell your main web server to send traffic from `tib-usa.app` to port `8002`.
+
+### Option A: Using Nginx
+Create `/etc/nginx/sites-available/tib-cigar`:
+```nginx
+server {
+    server_name tib-usa.app;
+
+    location / {
+        proxy_pass http://localhost:8002;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+### Option B: Using Apache
+Create/Edit conf file:
+```apache
+<VirtualHost *:80>
+    ServerName tib-usa.app
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8002/
+    ProxyPassReverse / http://localhost:8002/
+</VirtualHost>
+```
+
+## 3. SSL (Certbot)
+Run Certbot to secure the domain automatically:
+```bash
+certbot --nginx -d tib-usa.app
+# OR
+certbot --apache -d tib-usa.app
 ```
