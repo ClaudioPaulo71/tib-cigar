@@ -1,21 +1,61 @@
 services:
+  # Reverse Proxy (Traefik) - Handles HTTPS automatically
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--api.insecure=true" # Dashboard enabled (do not expose in prod without auth)
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # LetsEncrypt Setup
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory" # Comment out for Prod
+      - "--certificatesresolvers.myresolver.acme.email=admin@tib-usa.app" # REPLACE WITH REAL EMAIL
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "8080:8080" # Dashboard (Tunnel/VPN only)
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - web_network
+
+  # Main Application
   web:
     build: .
     container_name: tib_saas_app
     restart: always
-    ports:
-      - "8001:8000" # Expose on 8001 to avoid conflict with existing site
     volumes:
-      - ./data:/app/data
-      - ./static/uploads:/app/static/uploads
+      - ./data:/app/data               # Persist Database
+      - ./static/uploads:/app/static/uploads # Persist User Uploads
     env_file:
       - .env
     environment:
       - DATABASE_URL=sqlite:///data/tib_saas.db
-    # networks: # Network not needed if strictly local proxy
-    #   - web_gateway
+    networks:
+      - web_network
+    labels:
+      - "traefik.enable=true"
+      # HTTP Router (Redirect to HTTPS)
+      - "traefik.http.routers.app-http.rule=Host(`tib-usa.app`, `www.tib-usa.app`)"
+      - "traefik.http.routers.app-http.entrypoints=web"
+      - "traefik.http.routers.app-http.middlewares=https-redirect"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      # HTTPS Router
+      - "traefik.http.routers.app.rule=Host(`tib-usa.app`, `www.tib-usa.app`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
+
+networks:
+  web_network:
 
 volumes:
-  data:
+  letsencrypt: # Certs persistence
 
 

@@ -1,0 +1,464 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-12 animate-[fadeIn_0.5s_ease-out]">
+
+    <!-- Header / Breadcrumbs -->
+    <div class="flex items-center gap-4 text-xs font-mono text-stone-500 uppercase tracking-widest">
+        <a href="/humidor" class="hover:text-gold transition">Humidor</a>
+        <span>/</span>
+        <span class="text-gold-dim">{{ cigar.brand }}</span>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+        <!-- Left Column: Images (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+            <!-- Main Image -->
+            <div
+                class="classic-panel p-2 bg-leather-light rounded-2xl grayscale hover:grayscale-0 transition-all duration-700 group">
+                <div class="aspect-[3/4] bg-[#150d09] overflow-hidden relative rounded-xl">
+                    {% if cigar.images and cigar.images[0] %}
+                    <img src="/{{ cigar.images[0].url }}" class="w-full h-full object-cover" alt="Main View">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center opacity-10">
+                        <span class="text-6xl">🍂</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Gallery Grid -->
+            {% if cigar.images|length > 1 %}
+            <div class="grid grid-cols-3 gap-2">
+                {% for img in cigar.images[1:] %}
+                <div
+                    class="aspect-square bg-[#150d09] overflow-hidden border border-gold-dim/20 rounded-xl grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer">
+                    <img src="/{{ img.url }}" class="w-full h-full object-cover" alt="Gallery">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Details & Journal (8 cols) -->
+        <div class="lg:col-span-8 space-y-12">
+
+            <!-- Cigar Profile Card -->
+            <div class="space-y-6">
+                <div>
+                    <h1 class="text-5xl font-serif font-bold text-parchment mb-2">{{ cigar.line }}</h1>
+                    <h2 class="text-2xl font-serif italic text-gold-dim">{{ cigar.brand }}</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y border-gold-dim/10">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Vitola</span>
+                            <span class="font-serif text-lg text-parchment">{{ cigar.vitola }}</span>
+                        </div>
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Format</span>
+                            <span class="font-serif text-lg text-parchment">{{ cigar.format or "—" }}</span>
+                        </div>
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Dimensions</span>
+                            <span class="font-serif text-lg text-parchment">
+                                {% if cigar.length_in %}{{ cigar.length_in }}"{% endif %}
+                                {% if cigar.ring_gauge %}x {{ cigar.ring_gauge }}{% endif %}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Origin</span>
+                            <span class="font-serif text-lg text-parchment">{{ cigar.origin or "—" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Wrapper</span>
+                            <span class="font-serif text-lg text-parchment">{{ cigar.wrapper or "—" }}</span>
+                        </div>
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Color</span>
+                            <span class="font-serif text-lg text-parchment">{{ cigar.wrapper_color or "—" }}</span>
+                        </div>
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2 pt-4">
+                            <span class="text-gold font-bold uppercase tracking-widest text-xs">In Stock</span>
+                            <span class="font-mono text-xl text-gold-light">{{ cigar.quantity }}</span>
+                        </div>
+                        <div class="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <span class="text-xs font-bold uppercase tracking-widest text-stone-500">Aged Since</span>
+                            <span class="font-serif text-sm text-stone-400">{{ cigar.aging_since or "—" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button onclick="document.getElementById('editCigarModal').showModal()"
+                        class="text-xs uppercase tracking-widest text-stone-500 hover:text-white underline">Edit
+                        Details</button>
+                    <!-- Add more logic later if needed -->
+                </div>
+            </div>
+
+            <!-- Smoking Journal -->
+            <div class="space-y-8">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-3xl font-serif text-gold italic">Smoking Journal</h3>
+                    <button onclick="document.getElementById('logSessionModal').showModal()"
+                        class="bg-gold-dim hover:bg-gold text-leather-dark px-8 py-3 rounded-sm font-bold uppercase tracking-widest text-xs transition shadow-lg">
+                        Log Experience
+                    </button>
+                </div>
+
+                <div class="space-y-8">
+                    {% for session in cigar.sessions|reverse %}
+                    <div class="classic-panel p-8 rounded-sm relative bg-[#22130e]">
+                        <div class="absolute top-4 right-6 text-4xl font-serif font-black text-gold-dim/20">{{
+                            session.rating_overall }}</div>
+
+                        <div class="flex items-center gap-4 mb-6 border-b border-gold-dim/10 pb-4">
+                            <div class="text-center">
+                                <span class="block text-2xl font-serif font-bold text-parchment">{{ session.date.day
+                                    }}</span>
+                                <span class="block text-xs uppercase tracking-widest text-stone-500">{{
+                                    session.date.strftime('%b %Y') }}</span>
+                            </div>
+                            <div class="h-8 w-px bg-white/10"></div>
+                            <div>
+                                <span class="block text-xs uppercase tracking-widest text-stone-500">Duration</span>
+                                <span class="font-mono text-stone-300">{{ session.duration_minutes }}m</span>
+                            </div>
+                            {% if session.pairing %}
+                            <div class="h-8 w-px bg-white/10 hidden md:block"></div>
+                            <div class="hidden md:block">
+                                <span class="block text-xs uppercase tracking-widest text-stone-500">Pairing</span>
+                                <span class="font-serif italic text-stone-300">{{ session.pairing }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Ratings Grid -->
+                        <div class="grid grid-cols-4 gap-4 mb-6 text-center">
+                            <div>
+                                <div class="text-xs text-stone-500 uppercase tracking-widest mb-1">Const.</div>
+                                <div class="font-mono text-gold">{{ session.rating_construction or "-" }}/10</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-stone-500 uppercase tracking-widest mb-1">Draw</div>
+                                <div class="font-mono text-gold">{{ session.rating_draw or "-" }}/10</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-stone-500 uppercase tracking-widest mb-1">Flavor</div>
+                                <div class="font-mono text-gold">{{ session.rating_flavor or "-" }}/10</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-stone-500 uppercase tracking-widest mb-1">Strength</div>
+                                <div class="font-serif italic text-stone-300">{{ session.strength_profile or "-" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if session.tasting_notes %}
+                        <div
+                            class="font-serif text-parchment/80 leading-relaxed italic border-l-2 border-gold-dim/30 pl-4">
+                            "{{ session.tasting_notes }}"
+                        </div>
+                        {% endif %}
+
+                        <!-- Session Photos -->
+                        {% if session.images %}
+                        <div class="flex gap-2 mt-6 overflow-x-auto pb-2">
+                            {% for img in session.images %}
+                            <img src="/{{ img.url }}"
+                                class="h-20 w-20 object-cover border border-gold-dim/20 rounded-sm">
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                    </div>
+                    {% else %}
+                    <p class="text-stone-500 font-serif italic text-center py-8">No sessions recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Log Session Modal -->
+<dialog id="logSessionModal" class="bg-transparent backdrop:bg-black/80">
+    <div
+        class="classic-panel p-8 rounded-sm max-w-2xl w-full mx-auto relative animate-[fadeInUp_0.3s_ease-out] border border-gold/20 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-8 border-b border-gold-dim/10 pb-4">
+            <h3 class="text-2xl font-serif text-gold italic">Journal Entry</h3>
+            <form method="dialog">
+                <button class="text-stone-500 hover:text-red-400 transition font-mono">✕</button>
+            </form>
+        </div>
+        <form action="/humidor/{{ cigar.id }}/session" method="POST" enctype="multipart/form-data" class="space-y-8">
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-1">
+                    <label class="block text-xs font-mono text-gold-dim">Date</label>
+                    <input type="date" name="date" required class="w-full classic-input placeholder-stone-700">
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-mono text-gold-dim">
+                        <label>Duration (min)</label>
+                        <span id="out_duration" class="text-white font-bold">60</span>
+                    </div>
+                    <input type="range" name="duration" min="0" max="180" value="60" step="5"
+                        class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-gold"
+                        oninput="updateOutput(this.value, 'out_duration')">
+                </div>
+            </div>
+
+            <!-- Granular Ratings -->
+            <div class="space-y-4">
+                <script>
+                    function updateOutput(val, id) {
+                        document.getElementById(id).innerText = val;
+                    }
+                    function updateStrength(val) {
+                        const labels = ["Mild", "Mild-Medium", "Medium", "Medium-Full", "Full"];
+                        const text = labels[val - 1];
+                        document.getElementById('strength_display').innerText = text;
+                        document.getElementById('strength_input').value = text;
+                    }
+                </script>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 border-b border-white/5 pb-2">
+                    Sensory Analysis (1-10)</h4>
+
+                <div class="space-y-6">
+                    <!-- Construction -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono text-gold-dim">
+                            <label>Construction / Burn</label>
+                            <span id="out_const" class="text-white font-bold">5</span>
+                        </div>
+                        <input type="range" name="rating_construction" min="1" max="10" value="5"
+                            class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-gold"
+                            oninput="updateOutput(this.value, 'out_const')">
+                    </div>
+
+                    <!-- Draw -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono text-gold-dim">
+                            <label>Draw / Cold Draw</label>
+                            <span id="out_draw" class="text-white font-bold">5</span>
+                        </div>
+                        <input type="range" name="rating_draw" min="1" max="10" value="5"
+                            class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-gold"
+                            oninput="updateOutput(this.value, 'out_draw')">
+                    </div>
+
+                    <!-- Flavor -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono text-gold-dim">
+                            <label>Flavor / Complexity</label>
+                            <span id="out_flavor" class="text-white font-bold">5</span>
+                        </div>
+                        <input type="range" name="rating_flavor" min="1" max="10" value="5"
+                            class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-gold"
+                            oninput="updateOutput(this.value, 'out_flavor')">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strength & Overall (Sliders) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+
+                <!-- Strength Slider (1-5 mapped to Text) -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-mono text-gold-dim">
+                        <label>Strength Profile</label>
+                        <span id="strength_display" class="text-white font-serif italic">Medium</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3"
+                        class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-red-400"
+                        oninput="updateStrength(this.value)">
+                    <input type="hidden" name="strength_profile" id="strength_input" value="Medium">
+                    <div class="flex justify-between text-[8px] uppercase tracking-widest text-stone-600 px-1">
+                        <span>Mild</span><span>Full</span>
+                    </div>
+                </div>
+
+                <!-- Overall Slider (0-100) -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-mono text-gold">
+                        <label>Overall Score</label>
+                        <span id="out_overall" class="text-2xl font-bold text-gold-light">90</span>
+                    </div>
+                    <input type="range" name="rating_overall" min="0" max="100" value="90"
+                        class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer accent-gold-light"
+                        oninput="updateOutput(this.value, 'out_overall')">
+                </div>
+            </div>
+
+
+            <div class="space-y-1">
+                <label class="block text-xs font-mono text-gold-dim">Pairing</label>
+                <input type="text" name="pairing" placeholder="e.g. Single Malt Scotch, Espresso..."
+                    class="w-full classic-input placeholder-stone-700">
+            </div>
+
+            <div class="space-y-1">
+                <label class="block text-xs font-mono text-gold-dim">Tasting Notes</label>
+                <textarea name="notes" rows="4" placeholder="Describe the evolution, flavors, and finish..."
+                    class="w-full classic-input placeholder-stone-700 bg-leather-dark"></textarea>
+            </div>
+
+            <div class="space-y-1 mt-4">
+                <label class="block text-xs font-mono text-gold-dim">Session Photos</label>
+                <input type="file" name="photos" multiple accept="image/*"
+                    class="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-gold-dim file:text-leather-dark hover:file:bg-gold transition cursor-pointer">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-gold-dim hover:bg-gold text-leather-dark px-8 py-4 rounded-sm font-bold uppercase tracking-widest text-sm transition shadow-lg mt-4">
+                Sign Journal Entry
+            </button>
+        </form>
+    </div>
+</dialog>
+<!-- Edit Cigar Modal -->
+<dialog id="editCigarModal" class="bg-transparent backdrop:bg-black/80">
+    <div
+        class="classic-panel p-8 rounded-sm max-w-4xl w-full mx-auto relative animate-[fadeInUp_0.3s_ease-out] border border-gold/20 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-8 border-b border-gold-dim/10 pb-4">
+            <h3 class="text-2xl font-serif text-gold italic">Edit Cigar Details</h3>
+            <form method="dialog">
+                <button class="text-stone-500 hover:text-red-400 transition font-mono">✕ CLOSE</button>
+            </form>
+        </div>
+
+        <form action="/humidor/{{ cigar.id }}/update" method="POST" enctype="multipart/form-data" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Section 1: Identity -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Identity</h4>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Brand</label>
+                        <input type="text" name="brand" required value="{{ cigar.brand }}"
+                            class="w-full classic-input placeholder-stone-700">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Line / Series</label>
+                        <input type="text" name="line" required value="{{ cigar.line }}"
+                            class="w-full classic-input placeholder-stone-700">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Origin</label>
+                        <input type="text" name="origin" value="{{ cigar.origin or '' }}"
+                            class="w-full classic-input placeholder-stone-700">
+                    </div>
+                </div>
+
+                <!-- Section 2: Vitola & Dimensions -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Specs</h4>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Shape</label>
+                            <select name="format" class="w-full classic-input bg-leather-dark">
+                                <option value="{{ cigar.format or '' }}" selected hidden>{{ cigar.format or 'Select
+                                    Shape...' }}</option>
+                                <option value="Parejo">Parejo (Straight)</option>
+                                <option value="Box Pressed">Box Pressed</option>
+                                <option value="Torpedo">Torpedo</option>
+                                <option value="Belicoso">Belicoso</option>
+                                <option value="Pyramid">Pyramid</option>
+                                <option value="Perfecto">Perfecto</option>
+                                <option value="Diadema">Diadema</option>
+                                <option value="Culebra">Culebra</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Vitola Name</label>
+                            <input type="text" name="vitola" required value="{{ cigar.vitola }}"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Length (in)</label>
+                            <input type="number" step="0.1" name="length_in" value="{{ cigar.length_in or '' }}"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Ring Gauge</label>
+                            <input type="number" name="ring_gauge" value="{{ cigar.ring_gauge or '' }}"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Wrapper -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Wrapper</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Type</label>
+                            <input type="text" name="wrapper" value="{{ cigar.wrapper or '' }}"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Color</label>
+                            <select name="wrapper_color" class="w-full classic-input bg-leather-dark">
+                                <option value="{{ cigar.wrapper_color or '' }}" selected hidden>{{ cigar.wrapper_color
+                                    or 'Select Color...' }}</option>
+                                <option value="Double Claro">Double Claro (Candela)</option>
+                                <option value="Claro">Claro (Connecticut)</option>
+                                <option value="Colorado Claro">Colorado Claro</option>
+                                <option value="Colorado">Colorado</option>
+                                <option value="Colorado Maduro">Colorado Maduro</option>
+                                <option value="Maduro">Maduro</option>
+                                <option value="Oscuro">Oscuro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Inventory -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Inventory</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Qty</label>
+                            <input type="number" name="quantity" required value="{{ cigar.quantity }}"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Price ($)</label>
+                            <input type="number" step="0.01" name="price_paid" value="{{ cigar.price_paid or 0 }}"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+                    <div class="space-y-1 mt-4">
+                        <label class="block text-xs font-mono text-gold-dim">Add Photos</label>
+                        <input type="file" name="photos" multiple accept="image/*"
+                            class="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-gold-dim file:text-leather-dark hover:file:bg-gold transition cursor-pointer">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-6 border-t border-gold-dim/10 flex justify-end">
+                <button type="submit"
+                    class="bg-gold-dim hover:bg-gold text-leather-dark px-10 py-3 rounded-sm font-bold uppercase tracking-widest text-xs transition shadow-lg">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>
+{% endblock %}

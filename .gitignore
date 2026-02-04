@@ -43,3 +43,8 @@ ENV/
 
 # Logs
 *.log
+
+# User Content
+static/uploads/*
+!static/uploads/.gitkeep
+data/

@@ -1,92 +1,52 @@
-# Deployment Guide - TIB SaaS 🚀
-
-This guide explains how to deploy the TIB-SaaS application to your Hostinger VPS using Docker.
+# Deployment Guide: TIB-SaaS (Git Workflow)
 
 ## Prerequisites
+- **VPS**: Hostinger (Ubuntu 20.04/22.04).
+- **Domain**: `tib-usa.app` → VPS IP.
+- **Git**: Installed on VPS (`apt install git`).
+- **Docker**: Installed on VPS.
 
-1.  **Docker & Git installed on VPS**:
-    ```bash
-    # Run on your VPS
-    sudo apt update
-    sudo apt install -y git docker.io docker-compose
-    ```
-
-## Step 1: Upload Code
-
-Since you have the code on your local machine, you have two options:
-
-### Option A: Via Git (Recommended)
-1.  Push your code to a private GitHub/GitLab repo.
-2.  Clone it on the server:
-    ```bash
-    git clone https://github.com/your-username/tib-saas.git
-    cd tib-saas
-    ```
-
-### Option B: Via SCP (Direct Copy)
-If you don't want to use GitHub yet, copy the folder directly:
+## 1. Setup Remote (On Your Machine)
+If you haven't already linked your Github/Gitlab:
 ```bash
-# Run this from your LOCAL machine terminal
-scp -r /home/crpaulo71/TIB-SaaS root@YOUR_SERVER_IP:/var/www/tib-saas
+git remote add origin https://github.com/YOUR_USER/tib-saas.git
+git add .
+git commit -m "Deployment Ready"
+git push -u origin master
 ```
 
-## Step 2: Configure Environment
-
-1.  SSH into your server:
-    ```bash
-    ssh root@YOUR_SERVER_IP
-    cd /var/www/tib-saas
-    ```
-2.  Create the production `.env` file (NEVER commit this to Git!):
-    ```bash
-    nano .env
-    ```
-3.  Paste your production keys (Change SECRET_KEY!):
-    ```ini
-    SECRET_KEY=CHANGE_THIS_TO_A_VERY_LONG_RANDOM_STRING
-    ALGORITHM=HS256
-    ACCESS_TOKEN_EXPIRE_MINUTES=60
-    DATABASE_URL=sqlite:///data/tib_saas.db
-    ```
-
-## Step 3: Launch with Docker
-
-Run the application container:
+## 2. Prepare Server (VPS)
+SSH into your server:
 ```bash
-sudo docker-compose up -d --build
+ssh root@your_vps_ip
 ```
 
--   **`up -d`**: Runs in background (detached).
--   **`--build`**: Forces a rebuild of the image.
-
-## Step 4: Reverse Proxy (Nginx)
-
-Since you already have a site on Hostinger, you likely use Nginx. To make this app accessible via a domain (e.g., `app.yoursite.com` or `yoursite.com/app`), add this block to your Nginx config:
-
-```nginx
-server {
-    server_name app.yourdomain.com;
-
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-Check configuration and restart Nginx:
+Clone the repository:
 ```bash
-sudo nginx -t
-sudo systemctl restart nginx
+cd /var/www
+git clone https://github.com/YOUR_USER/tib-saas.git
+cd tib-saas
 ```
 
-## Maintenance
+## 3. Configuration
+Create the production environment file:
+```bash
+cp .env.example .env
+nano .env
+```
+*Paste your production keys here (Secret Key, Stripe Live Keys).*
 
--   **View Logs**: `docker-compose logs -f`
--   **Stop App**: `docker-compose down`
--   **Update**:
-    1.  `git pull` (or re-upload files)
-    2.  `docker-compose up -d --build`
+## 4. Deploy
+Build and start the containers:
+```bash
+docker-compose up -d --build
+```
+
+**HTTPS is Automatic:** Traefik will request a certificate for `tib-usa.app`.
+
+## 5. Updates (Future)
+To update the app later, just run inside the folder:
+```bash
+git pull origin master
+docker-compose up -d --build
+```

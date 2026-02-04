@@ -23,9 +23,11 @@ def dashboard(
         return RedirectResponse(url="/auth/login")
 
     stats = service.get_aggregated_stats(user)
+    charts = service.get_charts_data(user)
     
     return templates.TemplateResponse("analytics/dashboard.html", {
         "request": request,
         "stats": stats,
+        "charts": charts,
         "user": user
     })

@@ -1,0 +1,288 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
+
+    <!-- 1. Stats Dashboard (Ledger Style) -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 border-b border-gold-dim/20 pb-8">
+        <!-- Total Value -->
+        <div class="text-center md:text-left space-y-1">
+            <p class="text-stone-500 text-xs font-bold uppercase tracking-[0.2em]">Asset Value</p>
+            <p class="text-4xl font-serif text-gold-light">${{ "%.2f"|format(stats.total_value) }}</p>
+        </div>
+
+        <!-- Total Cigars -->
+        <div class="text-center md:text-left space-y-1">
+            <p class="text-stone-500 text-xs font-bold uppercase tracking-[0.2em]">Total Inventory</p>
+            <p class="text-4xl font-serif text-parchment">{{ stats.total_cigars }} <span
+                    class="text-base text-stone-600 italic">sticks</span></p>
+        </div>
+
+        <!-- Unique SKUs -->
+        <div class="text-center md:text-left space-y-1">
+            <p class="text-stone-500 text-xs font-bold uppercase tracking-[0.2em]">Unique Blends</p>
+            <p class="text-4xl font-serif text-parchment">{{ stats.cigar_count }}</p>
+        </div>
+
+        <!-- Sessions -->
+        <div class="text-center md:text-left space-y-1">
+            <p class="text-stone-500 text-xs font-bold uppercase tracking-[0.2em]">Journals Logged</p>
+            <p class="text-4xl font-serif text-parchment">{{ stats.total_sessions }}</p>
+        </div>
+    </div>
+
+    <!-- 2. Actions & Filters -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <h2 class="text-3xl font-serif text-gold italic">The Collection</h2>
+
+        <button onclick="document.getElementById('addCigarModal').showModal()"
+            class="bg-gold-dim hover:bg-gold text-leather-dark px-8 py-2 rounded-sm font-bold uppercase tracking-widest text-xs transition border border-gold shadow-lg shadow-black/20">
+            + New Entry
+        </button>
+    </div>
+
+    <!-- 3. Cigars Grid (Cabinet Style) -->
+    {% if cigars %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for cigar in cigars %}
+        <a href="/humidor/{{ cigar.id }}"
+            class="group classic-panel rounded-lg relative transition-all duration-300 hover:-translate-y-1 hover:border-gold/50">
+            <!-- Image Area -->
+            <div class="aspect-[4/3] bg-[#1a0f0a] relative overflow-hidden rounded-t-lg border-b border-gold-dim/20">
+                {% if cigar.images and cigar.images[0] %}
+                <img src="/{{ cigar.images[0].url }}" alt="{{ cigar.brand }}"
+                    class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-700 sepia-[0.2]">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-stone-800 opacity-20">
+                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M20.9,13.2l-2.1-0.7l-0.6-2.1c-0.3-0.9-1.3-1.4-2.2-1.1L3.9,12.7c-0.9,0.3-1.4,1.3-1.1,2.2l0.6,2.1l2.1,0.7 c0.9,0.3,1.9-0.2,2.2-1.1l0.6-2.1l7.8,2.7l-0.6,2.1c-0.3,0.9,0.2,1.9,1.1,2.2l2.1,0.7l0.6,2.1c0.3,0.9,1.3,1.4,2.2,1.1l12.1-3.5 C21.8,14.8,21.2,13.5,20.9,13.2z M19.4,15.9l-2.1-0.7c-0.5-0.2-0.8-0.7-0.6-1.2l0.6-2.1c0.2-0.5,0.7-0.8,1.2-0.6l2.1,0.7 c0.5,0.2,0.8,0.7,0.6,1.2l-0.6,2.1C20.4,15.8,19.9,16.1,19.4,15.9z" />
+                    </svg>
+                </div>
+                {% endif %}
+
+                <div class="absolute top-0 right-0 bg-leather-dark/90 px-4 py-1 border-l border-b border-gold-dim/20">
+                    <span class="text-xs font-mono text-gold">{{ cigar.quantity }} LEFT</span>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div>
+                    <h3 class="text-xl font-serif font-bold text-parchment group-hover:text-gold transition">{{
+                        cigar.brand }}</h3>
+                    <p class="text-stone-500 font-serif italic">{{ cigar.line }}</p>
+                </div>
+
+                <div
+                    class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-mono text-stone-400 border-t border-white/5 pt-4">
+                    {% if cigar.vitola %}
+                    <span class="flex items-center gap-1">
+                        <span class="text-gold-dim">▪</span> {{ cigar.vitola }}
+                    </span>
+                    {% endif %}
+                    {% if cigar.wrapper_color %}
+                    <span class="flex items-center gap-1">
+                        <span class="text-gold-dim">▪</span> {{ cigar.wrapper_color }}
+                    </span>
+                    {% endif %}
+                    {% if cigar.ring_gauge and cigar.length_in %}
+                    <span class="flex items-center gap-1">
+                        <span class="text-gold-dim">▪</span> {{ cigar.length_in }}" x {{ cigar.ring_gauge }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="classic-panel p-16 rounded-sm text-center space-y-6 border-dashed border-gold-dim/30">
+        <div class="text-6xl opacity-30">🍂</div>
+        <h3 class="text-2xl font-serif text-parchment italic">The Humidor is Empty</h3>
+        <p class="text-stone-500 max-w-md mx-auto font-serif">"A cigar is as good as memories you have when you smoked
+            it."</p>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Add Cigar Modal -->
+<dialog id="addCigarModal" class="bg-transparent backdrop:bg-black/80">
+    <div
+        class="classic-panel p-8 rounded-sm max-w-4xl w-full mx-auto relative animate-[fadeInUp_0.3s_ease-out] border border-gold/20">
+        <div class="flex justify-between items-center mb-8 border-b border-gold-dim/10 pb-4">
+            <h3 class="text-2xl font-serif text-gold italic">Catalog New Cigar</h3>
+            <form method="dialog">
+                <button class="text-stone-500 hover:text-red-400 transition font-mono">✕ CLOSE</button>
+            </form>
+        </div>
+
+        <form action="/humidor/new" method="POST" enctype="multipart/form-data" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Section 1: Identity -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Identity</h4>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Brand</label>
+                        <input type="text" name="brand" required placeholder="e.g. Arturo Fuente" list="brands-list"
+                            autocomplete="off" class="w-full classic-input placeholder-stone-700">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Line / Series</label>
+                        <input type="text" name="line" required placeholder="e.g. Opus X" list="lines-list"
+                            autocomplete="off" class="w-full classic-input placeholder-stone-700">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Origin</label>
+                        <input type="text" name="origin" placeholder="e.g. Dominican Republic" list="origins-list"
+                            autocomplete="off" class="w-full classic-input placeholder-stone-700">
+                    </div>
+                </div>
+
+                <!-- Section 2: Vitola & Dimensions -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Specs</h4>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Shape (Format)</label>
+                            <select name="format" class="w-full classic-input bg-leather-dark">
+                                <option value="">Select Shape...</option>
+                                <option value="Parejo">Parejo (Straight)</option>
+                                <option value="Box Pressed">Box Pressed</option>
+                                <option value="Torpedo">Torpedo</option>
+                                <option value="Belicoso">Belicoso</option>
+                                <option value="Pyramid">Pyramid</option>
+                                <option value="Perfecto">Perfecto</option>
+                                <option value="Diadema">Diadema</option>
+                                <option value="Culebra">Culebra</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Vitola Name</label>
+                            <input type="text" name="vitola" required placeholder="e.g. Robusto" list="vitolas-list"
+                                autocomplete="off" class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Length (inches)</label>
+                            <input type="number" step="0.1" name="length_in" placeholder="5.0"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Ring Gauge</label>
+                            <input type="number" name="ring_gauge" placeholder="50"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Wrapper -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Wrapper</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Wrapper Type</label>
+                            <input type="text" name="wrapper" placeholder="e.g. Habano" list="wrappers-list"
+                                autocomplete="off" class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Color</label>
+                            <select name="wrapper_color" class="w-full classic-input bg-leather-dark">
+                                <option value="">Select Color...</option>
+                                <option value="Double Claro">Double Claro (Candela)</option>
+                                <option value="Claro">Claro (Connecticut)</option>
+                                <option value="Colorado Claro">Colorado Claro</option>
+                                <option value="Colorado">Colorado</option>
+                                <option value="Colorado Maduro">Colorado Maduro</option>
+                                <option value="Maduro">Maduro</option>
+                                <option value="Oscuro">Oscuro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Inventory -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Inventory</h4>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Qty</label>
+                            <input type="number" name="quantity" required value="1"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Price ($)</label>
+                            <input type="number" step="0.01" name="price_paid"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Date</label>
+                            <input type="date" name="purchase_date" class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+                    <div class="space-y-1 mt-4">
+                        <label class="block text-xs font-mono text-gold-dim">Photos (Select up to 3)</label>
+                        <input type="file" name="photos" multiple accept="image/*"
+                            class="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-gold-dim file:text-leather-dark hover:file:bg-gold transition cursor-pointer">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-6 border-t border-gold-dim/10 flex justify-end">
+                <button type="submit"
+                    class="bg-gold-dim hover:bg-gold text-leather-dark px-10 py-3 rounded-sm font-bold uppercase tracking-widest text-xs transition shadow-lg">
+                    Add to Collection
+                </button>
+            </div>
+        </form>
+    </div>
+    </div>
+</dialog>
+
+<!-- Datalists for Smart Autocomplete -->
+<datalist id="brands-list">
+    {% for x in options.brands %}<option value="{{ x }}">{% endfor %}
+</datalist>
+<datalist id="lines-list">
+    {% for x in options.lines %}<option value="{{ x }}">{% endfor %}
+</datalist>
+<datalist id="vitolas-list">
+    {% for x in options.vitolas %}<option value="{{ x }}">{% endfor %}
+</datalist>
+<datalist id="origins-list">
+    {% for x in options.origins %}<option value="{{ x }}">{% endfor %}
+</datalist>
+<datalist id="wrappers-list">
+    {% for x in options.wrappers %}<option value="{{ x }}">{% endfor %}
+</datalist>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

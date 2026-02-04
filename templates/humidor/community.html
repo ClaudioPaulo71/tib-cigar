@@ -1,0 +1,87 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gold-dim/20 pb-8">
+        <div>
+            <h1 class="text-4xl font-serif text-gold italic mb-2">The Lounge Archive</h1>
+            <p class="text-stone-500 font-mono text-xs uppercase tracking-widest">Global Community Database</p>
+        </div>
+        <a href="/humidor"
+            class="text-xs font-bold uppercase tracking-widest text-stone-500 hover:text-gold transition">
+            ← Back to My Humidor
+        </a>
+    </div>
+
+    <!-- Cigars Table -->
+    <div class="classic-panel rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead
+                    class="bg-leather-light border-b border-gold-dim/20 text-xs uppercase tracking-widest text-gold-dim font-mono">
+                    <tr>
+                        <th class="p-6">Cigar Identity</th>
+                        <th class="p-6">Vitola</th>
+                        <th class="p-6">Wrapper</th>
+                        <th class="p-6">Origin</th>
+                        <th class="p-6 text-right">Popularity</th>
+                        <th class="p-6 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for cigar in cigars %}
+                    <tr class="hover:bg-white/5 transition group">
+                        <td class="p-6">
+                            <div class="font-bold text-parchment font-serif text-lg">{{ cigar.brand }}</div>
+                            <div class="text-stone-500 italic">{{ cigar.line }}</div>
+                        </td>
+                        <td class="p-6">
+                            <div class="text-parchment">{{ cigar.vitola }}</div>
+                            <div class="text-xs text-stone-600 font-mono mt-1">
+                                {% if cigar.length_in and cigar.ring_gauge %}
+                                {{ cigar.length_in }}" x {{ cigar.ring_gauge }}
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="p-6">
+                            <div class="text-parchment">{{ cigar.wrapper_color or "—" }}</div>
+                            <div class="text-xs text-stone-600 font-mono mt-1">{{ cigar.wrapper or "—" }}</div>
+                        </td>
+                        <td class="p-6 text-stone-400">{{ cigar.origin or "—" }}</td>
+                        <td class="p-6 text-right font-mono text-gold-dim">
+                            {{ cigar.popularity }} owners
+                        </td>
+                        <td class="p-6 text-right">
+                            <form action="/humidor/community/add" method="POST">
+                                <input type="hidden" name="brand" value="{{ cigar.brand }}">
+                                <input type="hidden" name="line" value="{{ cigar.line }}">
+                                <input type="hidden" name="vitola" value="{{ cigar.vitola }}">
+                                <input type="hidden" name="format" value="{{ cigar.format or '' }}">
+                                <input type="hidden" name="wrapper" value="{{ cigar.wrapper or '' }}">
+                                <input type="hidden" name="wrapper_color" value="{{ cigar.wrapper_color or '' }}">
+                                <input type="hidden" name="origin" value="{{ cigar.origin or '' }}">
+                                <input type="hidden" name="length_in" value="{{ cigar.length_in or '' }}">
+                                <input type="hidden" name="ring_gauge" value="{{ cigar.ring_gauge or '' }}">
+
+                                <button type="submit"
+                                    class="bg-gold-dim/10 hover:bg-gold hover:text-leather-dark text-gold border border-gold-dim/30 px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest transition">
+                                    + Add to Collection
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="p-12 text-center text-stone-500 font-serif italic">
+                            The archive is empty. Be the first to contribute by adding cigars to your humidor.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

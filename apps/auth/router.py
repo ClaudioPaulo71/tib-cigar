@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, Request, Response, status
+from fastapi import APIRouter, Depends, Form, Request, Response, status, UploadFile, File
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
@@ -64,7 +64,27 @@ def logout(
     return service.logout_user()
 
 from apps.auth.subscription_service import SubscriptionService
-from apps.auth.deps import get_current_user
+from apps.auth.deps import get_current_user, require_user
+
+# --- PROFILE ROUTES ---
+
+@router.get("/profile")
+def profile_page(request: Request, user: User = Depends(require_user)):
+    return templates.TemplateResponse("auth/profile.html", {"request": request, "user": user})
+
+@router.post("/profile")
+def update_profile(
+    request: Request,
+    full_name: str = Form(default=None),
+    phone: str = Form(default=None),
+    city: str = Form(default=None),
+    state: str = Form(default=None),
+    profile_image: UploadFile = File(default=None),
+    service: AuthService = Depends(get_service),
+    user: User = Depends(require_user)
+):
+    service.update_profile(user, full_name, phone, city, state, profile_image)
+    return RedirectResponse(url="/auth/profile", status_code=303)
 
 @router.get("/subscribe")
 def subscribe_premium(

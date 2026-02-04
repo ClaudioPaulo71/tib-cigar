@@ -1,140 +1,160 @@
 {% extends "shared/base.html" %}
 
 {% block content %}
-<div class="animate-[fadeIn_0.5s_ease-out]">
-    <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-2">
-        Command Center
-    </h2>
-    <p class="text-slate-500 font-mono text-sm mb-10">Asset & Performance Analytics</p>
+<div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
 
-    <!-- Main KPIs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <!-- Header -->
+    <div class="border-b border-gold-dim/20 pb-8">
+        <h2 class="text-4xl font-serif text-gold italic mb-2">The Ledger</h2>
+        <p class="text-stone-500 font-mono text-xs uppercase tracking-widest">Analytics & Insights</p>
+    </div>
 
-        <!-- Total Net Worth -->
-        <div class="lg:col-span-2 glass p-8 rounded-3xl relative overflow-hidden group">
-            <div
-                class="absolute inset-0 bg-gradient-to-r from-emerald-600/10 to-transparent transition-all duration-500 group-hover:from-emerald-600/20">
-            </div>
-            <div class="relative z-10">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total Net Asset Value</p>
-                <h3
-                    class="text-5xl lg:text-6xl font-black text-white group-hover:text-emerald-400 transition-colors tracking-tight">
-                    ${{ "{:,.0f}".format(stats.total_assets_value) }}
-                </h3>
-                <div class="mt-6 flex items-center gap-2">
-                    <span
-                        class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-lg border border-emerald-500/20 text-xs font-bold">
-                        Combined Portfolio
-                    </span>
-                </div>
-            </div>
-            <div class="absolute -bottom-8 -right-8 text-9xl opacity-5 text-emerald-500 rotate-12 pointer-events-none">
-                $
-            </div>
+    <!-- 1. KPI Cards (Row) -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Total Value -->
+        <div class="classic-panel p-6 rounded-lg space-y-2">
+            <p class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Asset Value</p>
+            <h3 class="text-3xl font-serif text-gold-light">${{ "{:,.2f}".format(stats.total_value) }}</h3>
         </div>
 
-        <!-- Garage KPI -->
-        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
-            <div
-                class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent transition-all duration-500 group-hover:from-blue-600/20">
-            </div>
-            <div class="relative z-10">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="p-3 bg-blue-500/20 rounded-2xl text-blue-400">
-                        🏎️
-                    </div>
-                    <span class="text-xs font-mono text-slate-500">{{ stats.garage.count }} Units</span>
-                </div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Garage Valuation</p>
-                <h3 class="text-2xl font-black text-white group-hover:text-blue-400 transition-colors">
-                    ${{ "{:,.0f}".format(stats.garage.value) }}
-                </h3>
-            </div>
+        <!-- Total Count -->
+        <div class="classic-panel p-6 rounded-lg space-y-2">
+            <p class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Total Sticks</p>
+            <h3 class="text-3xl font-serif text-parchment">{{ stats.total_count }}</h3>
         </div>
 
-        <!-- Armory KPI -->
-        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
-            <div
-                class="absolute inset-0 bg-gradient-to-br from-rose-600/10 to-transparent transition-all duration-500 group-hover:from-rose-600/20">
-            </div>
-            <div class="relative z-10">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="p-3 bg-rose-500/20 rounded-2xl text-rose-400">
-                        🔫
-                    </div>
-                    <span class="text-xs font-mono text-slate-500">{{ stats.armory.count }} Units</span>
-                </div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Armory Valuation</p>
-                <h3 class="text-2xl font-black text-white group-hover:text-rose-400 transition-colors">
-                    ${{ "{:,.0f}".format(stats.armory.value) }}
-                </h3>
-            </div>
+        <!-- Unique Brands -->
+        <div class="classic-panel p-6 rounded-lg space-y-2">
+            <p class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Unique Brands</p>
+            <h3 class="text-3xl font-serif text-parchment">{{ stats.unique_brands }}</h3>
+        </div>
+
+        <!-- Avg Rating -->
+        <div class="classic-panel p-6 rounded-lg space-y-2">
+            <p class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Avg Rating</p>
+            <h3 class="text-3xl font-serif text-amber-400">{{ stats.avg_rating }}<span
+                    class="text-base text-stone-600">/100</span></h3>
         </div>
     </div>
 
-    <!-- Secondary Stats Grid -->
+    <!-- 2. Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        <!-- Operational Costs -->
-        <div class="glass p-8 rounded-3xl">
-            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                Operational Metrics
-            </h4>
-
-            <div class="space-y-6">
-                <!-- Maintenance -->
-                <div class="relative group">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Garage
-                            Maintenance</span>
-                        <span class="text-xl font-mono text-amber-400">${{
-                            "{:,.2f}".format(stats.garage.maintenance_cost) }}</span>
-                    </div>
-                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div
-                            class="h-full bg-gradient-to-r from-amber-600 to-amber-400 w-[60%] opacity-80 group-hover:w-[65%] transition-all duration-1000">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rounds Fired -->
-                <div class="relative group">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Rounds Discharged</span>
-                        <span class="text-xl font-mono text-rose-400">{{ "{:,}".format(stats.armory.rounds_fired)
-                            }}</span>
-                    </div>
-                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div
-                            class="h-full bg-gradient-to-r from-rose-600 to-rose-400 w-[45%] opacity-80 group-hover:w-[50%] transition-all duration-1000">
-                        </div>
-                    </div>
-                </div>
+        <!-- Chart: Origins (Doughnut) -->
+        <div class="classic-panel p-6 rounded-lg">
+            <h4 class="text-lg font-serif text-gold-dim mb-6">Terroir (Origin)</h4>
+            <div class="relative h-64 w-full">
+                <canvas id="originChart"></canvas>
             </div>
         </div>
 
-        <!-- System Status (Placeholder for future expansion) -->
-        <div class="glass p-8 rounded-3xl flex flex-col justify-center items-center text-center">
-            <div
-                class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-3xl mb-4 animate-pulse">
-                ⚡
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">System Healthy</h3>
-            <p class="text-slate-500 text-xs max-w-xs">
-                All modules are operational. Data aggregation is running in real-time. Service layer optimization
-                active.
-            </p>
-            <div class="mt-6 flex gap-2">
-                <span
-                    class="px-2 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] rounded uppercase font-bold">Garage:
-                    Online</span>
-                <span
-                    class="px-2 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] rounded uppercase font-bold">Armory:
-                    Online</span>
+        <!-- Chart: Top Brands (Bar) -->
+        <div class="classic-panel p-6 rounded-lg">
+            <h4 class="text-lg font-serif text-gold-dim mb-6">Preferred Ateliers (Brands)</h4>
+            <div class="relative h-64 w-full">
+                <canvas id="brandChart"></canvas>
             </div>
         </div>
 
+        <!-- Chart: Top Smoked (Bar) -->
+        <div class="classic-panel p-6 rounded-lg lg:col-span-2">
+            <h4 class="text-lg font-serif text-gold-dim mb-6">Most Consumed (Sessions)</h4>
+            <div class="relative h-64 w-full">
+                <canvas id="topSmokedChart"></canvas>
+            </div>
+        </div>
     </div>
+
 </div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Common Config
+    Chart.defaults.color = '#a8a29e';
+    Chart.defaults.font.family = 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif';
+
+    const goldColor = '#d4af37';
+    const goldDim = '#8a7e5f';
+    const leatherDark = '#1a0f0a';
+    const parchment = '#f0e6d2';
+
+    // 1. Origin Chart
+    const ctxOrigin = document.getElementById('originChart').getContext('2d');
+    new Chart(ctxOrigin, {
+        type: 'doughnut',
+        data: {
+            labels: {{ charts.origins.labels | safe }},
+        datasets: [{
+            data: {{ charts.origins.data | safe }},
+        backgroundColor: [
+            '#d4af37', // Gold
+            '#8a7e5f', // Gold Dim
+            '#5c5443', // Darker Gold
+            '#f0e6d2', // Parchment
+            '#3f352b'  // Leather Light
+        ],
+        borderWidth: 0
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'right' }
+        }
+    }
+    });
+
+    // 2. Brand Chart
+    const ctxBrand = document.getElementById('brandChart').getContext('2d');
+    new Chart(ctxBrand, {
+        type: 'bar',
+        data: {
+            labels: {{ charts.brands.labels | safe }},
+        datasets: [{
+            label: 'Cigars in Humidor',
+            data: {{ charts.brands.data | safe }},
+        backgroundColor: goldColor,
+        borderRadius: 2
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#3f352b' } },
+            x: { grid: { display: false } }
+        },
+        plugins: { legend: { display: false } }
+    }
+    });
+
+    // 3. Top Smoked Chart
+    const ctxTop = document.getElementById('topSmokedChart').getContext('2d');
+    new Chart(ctxTop, {
+        type: 'bar',
+        data: {
+            labels: {{ charts.top_smoked.labels | safe }},
+        datasets: [{
+            label: 'Sessions Logged',
+            data: {{ charts.top_smoked.data | safe }},
+        backgroundColor: parchment,
+        borderRadius: 2,
+        barThickness: 20
+            }]
+        },
+        options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: { beginAtZero: true, grid: { color: '#3f352b' } },
+            y: { grid: { display: false } }
+        },
+        plugins: { legend: { display: false } }
+    }
+    });
+</script>
 {% endblock %}

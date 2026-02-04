@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIB SaaS Ecosystem</title>
-    <!-- Fonts: Outfit (Modern/Clean) & JetBrains Mono (Technical) -->
+    <title>Cigar Room</title>
+    <!-- Fonts: Playfair Display (Headings) & Lora (Body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;500;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap"
         rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,15 +19,20 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['Lora', 'serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['Courier Prime', 'monospace'],
                     },
                     colors: {
-                        tib: { 900: '#0f172a', 800: '#1e293b', 500: '#3b82f6' }
+                        // Classic Palette
+                        leather: { DEFAULT: '#2C1810', light: '#3E2C26', dark: '#1a0f0a' },
+                        gold: { DEFAULT: '#C5A028', light: '#D4AF37', dim: '#8A7019' },
+                        parchment: { DEFAULT: '#E8E6D9', dark: '#d1cdc0' },
+                        charcoal: '#121212'
                     },
                     backgroundImage: {
-                        'premium-gradient': 'radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%)',
-                        'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2394a3b8' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E\")"
+                        'classic-grain': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+                        'vignette': 'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%)'
                     }
                 }
             }
@@ -35,82 +40,97 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .glass {
-                @apply bg-slate-800/60 backdrop-blur-lg border border-white/10 shadow-xl;
+            .classic-panel {
+                @apply bg-leather-light border border-gold-dim/30 shadow-2xl shadow-black/50;
             }
-            .glass-hover {
-                @apply hover:bg-slate-700/60 hover:border-white/20 transition duration-300;
+            .classic-input {
+                @apply bg-leather-dark border-b border-gold-dim text-parchment px-2 py-2 focus:outline-none focus:border-gold transition-colors font-sans;
             }
             .nav-link {
-                @apply relative px-3 py-2 text-sm font-medium text-slate-300 transition-colors duration-200 hover:text-white;
+                @apply font-serif text-lg text-gold-dim hover:text-gold transition-colors italic tracking-wide;
             }
-            .nav-link::after {
-                content: '';
-                @apply absolute bottom-0 left-0 h-0.5 w-0 bg-blue-500 transition-all duration-300;
+            .nav-link.active {
+                @apply text-gold border-b border-gold;
             }
-            .nav-link:hover::after {
-                @apply w-full;
+            .text-gold-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-gold via-gold-light to-gold-dim;
             }
+        }
+        
+        body {
+            background-color: #1a0f0a;
+        }
+        @keyframes smokeDrift {
+            0% { background-position: 0% 0%; transform: scale(1); }
+            50% { background-position: 100% 50%; transform: scale(1.1); }
+            100% { background-position: 0% 0%; transform: scale(1); }
         }
     </style>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 
 <body
-    class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col bg-premium-gradient bg-fixed selection:bg-blue-500/30 selection:text-blue-200 relative">
+    class="bg-leather-dark text-parchment font-sans min-h-screen flex flex-col relative selection:bg-gold/30 selection:text-gold-light">
 
-    <!-- Background Texture -->
-    <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
+    <!-- Texture Overlay -->
+    <div
+        class="fixed inset-0 bg-[url('/static/img/bg-smoke.png')] bg-cover bg-center opacity-10 pointer-events-none z-0 mix-blend-screen animate-[smokeDrift_60s_linear_infinite]">
+    </div>
+    <div class="fixed inset-0 bg-classic-grain pointer-events-none z-0 opacity-30"></div>
+    <div class="fixed inset-0 bg-vignette pointer-events-none z-0"></div>
 
-    <nav class="glass border-b-0 sticky top-0 z-50">
+    <nav class="border-b border-gold-dim/20 bg-leather/90 sticky top-0 z-50 backdrop-blur-sm relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between h-20">
                 <div class="flex items-center">
-                    <a href="/"
-                        class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent transform hover:scale-105 transition">
-                        TIB<span class="font-light text-white">SaaS</span>
+                    <a href="/" class="flex flex-col items-start group">
+                        <span
+                            class="font-serif text-2xl font-bold tracking-widest text-gold group-hover:text-gold-light transition">CIGAR
+                            ROOM</span>
+                        <span
+                            class="text-[10px] uppercase tracking-[0.2em] text-stone-500 group-hover:text-gold-dim transition">Est.
+                            2026</span>
                     </a>
-                    <div class="hidden md:block ml-12">
-                        <div class="flex items-baseline space-x-6">
-                            <a href="/garage" class="nav-link">Garage</a>
-                            <a href="/range" class="nav-link">Armory</a>
-                            <a href="/analytics" class="nav-link text-emerald-400 hover:text-emerald-300">Command</a>
+                    <div class="hidden md:block ml-16">
+                        <div class="flex items-baseline space-x-8">
+                            <a href="/humidor" class="nav-link">The Humidor</a>
+                            <a href="/humidor/community" class="nav-link">The Lounge</a>
+                            <a href="/analytics" class="nav-link">Ledger</a>
                         </div>
                     </div>
                 </div>
-                <div class="hidden md:flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-6">
                     {% if user %}
-                    <div class="flex items-center gap-3 bg-slate-900/50 px-3 py-1.5 rounded-full border border-white/5">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span class="text-xs text-slate-400 font-mono">{{ user.email }}</span>
+                    <div class="flex items-center gap-3 px-3 py-1">
+                        <span class="text-xs font-mono text-gold-dim tracking-widest">{{ user.email }}</span>
                     </div>
+                    <a href="/auth/profile"
+                        class="text-xs font-bold uppercase tracking-widest text-parchment hover:text-gold transition-colors">Profile</a>
                     <a href="/auth/logout"
-                        class="text-xs font-semibold text-slate-400 hover:text-red-400 transition-colors">Logout</a>
+                        class="text-xs font-bold uppercase tracking-widest text-stone-500 hover:text-red-400 transition-colors">Sign
+                        Out</a>
                     {% else %}
-                    <a href="/auth/login"
-                        class="text-sm font-medium text-slate-400 hover:text-white transition">Login</a>
-                    <a href="/auth/register"
-                        class="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition shadow-lg shadow-blue-500/20 font-bold tracking-wide transform hover:-translate-y-0.5">
-                        Get Started
-                    </a>
+                    <a href="/auth/login" class="nav-link text-sm not-italic">Login</a>
                     {% endif %}
                 </div>
 
-                <!-- Premium Button (Conditional) -->
-                <!-- Ideally we inject 'settings' into templates, or check user status. For now, static link that redirects to logic -->
-                <a href="/auth/subscribe"
-                    class="hidden md:inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 shadow-lg shadow-amber-500/30 ml-4">
-                    Upgrade
-                </a>
-
-                <!-- Mobile menu button -->
-                <div class="-mr-2 flex md:hidden">
+                <!-- Mobile menu -->
+                <div class="flex items-center gap-4 md:hidden">
+                    {% if user %}
+                    <a href="/auth/profile" class="text-gold-dim hover:text-gold p-2">
+                        <span class="sr-only">Profile</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                    </a>
+                    {% endif %}
                     <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        class="text-gold hover:text-white p-2">
+                        <span class="sr-only">Menu</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
@@ -118,54 +138,29 @@
             </div>
         </div>
 
-        <!-- Mobile menu, show/hide based on menu state. -->
-        <div class="hidden md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="/garage"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Garage</a>
-                <a href="/range"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Armory</a>
-                <a href="/analytics"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:text-white hover:bg-slate-800">Command
-                    Center</a>
-            </div>
-            <div class="pt-4 pb-4 border-t border-slate-700">
+        <!-- Mobile menu -->
+        <div class="hidden md:hidden bg-leather border-b border-gold/10" id="mobile-menu">
+            <div class="px-4 pt-2 pb-4 space-y-2">
+                <a href="/humidor" class="block py-2 text-gold font-serif text-lg">The Humidor</a>
+                <a href="/humidor/community" class="block py-2 text-gold font-serif text-lg">The Lounge</a>
+                <a href="/analytics" class="block py-2 text-gold font-serif text-lg">Ledger</a>
+                <hr class="border-white/5 my-2">
                 {% if user %}
-                <div class="flex items-center px-5">
-                    <div class="flex-shrink-0">
-                        <div
-                            class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                            {{ user.email[0] | upper }}
-                        </div>
-                    </div>
-                    <div class="ml-3">
-                        <div class="text-base font-medium leading-none text-white">{{ user.email }}</div>
-                    </div>
-                </div>
-                <div class="mt-3 px-2 space-y-1">
-                    <a href="/auth/logout"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-slate-400 hover:text-white hover:bg-slate-800">Sign
-                        out</a>
-                </div>
+                <a href="/auth/profile" class="block py-2 text-parchment font-serif italic">My Membership Card</a>
+                <a href="/auth/logout" class="block py-2 text-stone-400 text-sm">Sign Out</a>
                 {% else %}
-                <div class="px-2 space-y-2">
-                    <a href="/auth/login"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-slate-400 hover:text-white hover:bg-slate-800">Login</a>
-                    <a href="/auth/register"
-                        class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Get Started</a>
-                </div>
+                <a href="/auth/login" class="block py-2 text-gold">Login</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow container mx-auto px-4 py-8 relative z-10 w-full max-w-7xl">
+    <main class="flex-grow container mx-auto px-4 py-12 relative z-10 w-full max-w-7xl">
         {% block content %}{% endblock %}
     </main>
 
-    <footer
-        class="border-t border-white/5 py-8 text-center text-slate-600 text-xs font-mono relative z-10 bg-slate-950/50 backdrop-blur-sm">
-        <p>&copy; 2026 TIB Technology // Built for Performance</p>
+    <footer class="border-t border-gold-dim/10 py-8 text-center text-stone-600 text-xs font-mono relative z-10">
+        <p>&copy; 2026 Cigar Room. Purveyors of Fine Software.</p>
     </footer>
 
 </body>

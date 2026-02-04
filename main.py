@@ -5,8 +5,7 @@ import uvicorn
 
 # 1. Imports do Banco e dos Módulos
 from database import create_db_and_tables 
-from apps.garage.router import router as garage_router
-from apps.range.router import router as range_router
+from apps.humidor.router import router as humidor_router
 from apps.auth.router import router as auth_router
 
 # Ciclo de vida (Cria tabelas ao iniciar)
@@ -27,8 +26,8 @@ templates = Jinja2Templates(directory="templates")
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
-    if exc.status_code == 302:
-        return RedirectResponse(url=exc.headers["Location"])
+    if exc.status_code == 302 or exc.status_code == 303:
+        return RedirectResponse(url=exc.headers["Location"], status_code=303)
     # Return standard JSON response for other errors
     from fastapi.responses import JSONResponse
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
@@ -41,14 +40,15 @@ from apps.analytics.router import router as analytics_router
 from apps.auth.webhook_router import router as webhook_router
 
 app.include_router(auth_router)
-app.include_router(garage_router)
-app.include_router(range_router)
+app.include_router(humidor_router)
 app.include_router(analytics_router)
 app.include_router(webhook_router)
 
 # Rota raiz (Landing Page)
 @app.get("/")
 def home(request: Request, user: User = Depends(get_current_user)):
+    if user:
+        return RedirectResponse(url="/humidor")
     return templates.TemplateResponse("landing.html", {"request": request, "user": user})
 
 if __name__ == "__main__":

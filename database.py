@@ -17,8 +17,7 @@ def get_session():
 # Essa função cria o arquivo .db e as tabelas se elas não existirem
 def create_db_and_tables():
     # ATUALME ESTA LINHA:
-    from apps.garage.models import Veiculo, Manutencao, Alerta
-    from apps.range.models import Gun, RangeSession, GunMaintenance, Accessory
+    from apps.humidor.models import Cigar, SmokingSession, CigarImage, SessionImage
     from apps.auth.models import User
     
     SQLModel.metadata.create_all(engine)

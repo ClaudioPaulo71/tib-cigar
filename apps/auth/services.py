@@ -1,8 +1,11 @@
 from typing import Optional, List
 from sqlmodel import Session, select
 from datetime import timedelta
-from fastapi import Response, status
+from fastapi import Response, status, UploadFile
 from fastapi.responses import RedirectResponse
+import shutil
+import uuid
+from pathlib import Path
 
 from apps.auth.models import User
 from apps.auth.utils import verify_password, get_password_hash, create_access_token
@@ -35,7 +38,7 @@ class AuthService(BaseService):
             data={"sub": user.email}, expires_delta=access_token_expires
         )
         
-        resp = RedirectResponse(url="/garage", status_code=status.HTTP_303_SEE_OTHER)
+        resp = RedirectResponse(url="/humidor", status_code=status.HTTP_303_SEE_OTHER)
         resp.set_cookie(
             key="access_token", 
             value=f"Bearer {access_token}", 
@@ -49,3 +52,35 @@ class AuthService(BaseService):
         resp = RedirectResponse(url="/auth/login", status_code=status.HTTP_303_SEE_OTHER)
         resp.delete_cookie(key="access_token")
         return resp
+    # --- PROFILE MANAGEMENT ---
+
+    def update_profile(
+        self, 
+        user: User, 
+        full_name: Optional[str] = None,
+        phone: Optional[str] = None,
+        city: Optional[str] = None,
+        state: Optional[str] = None,
+        profile_image: Optional[UploadFile] = None
+    ) -> User:
+        if full_name: user.full_name = full_name
+        if phone: user.phone = phone
+        if city: user.city = city
+        if state: user.state = state
+        
+        if profile_image and profile_image.filename:
+            # Reusing the logic from HumidorService - ideally this should be a shared utility
+            extensao = profile_image.filename.split(".")[-1]
+            nome_arquivo = f"user_{user.id}_{uuid.uuid4()}.{extensao}"
+            caminho_destino = Path(f"static/uploads/profiles/{nome_arquivo}")
+            caminho_destino.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(caminho_destino, "wb") as buffer:
+                shutil.copyfileobj(profile_image.file, buffer)
+            
+            user.profile_image = str(caminho_destino)
+            
+        self.session.add(user)
+        self.session.commit()
+        self.session.refresh(user)
+        return user

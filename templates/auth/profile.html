@@ -1,0 +1,129 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-12 animate-[fadeIn_0.5s_ease-out]">
+
+    <div class="flex items-center gap-4 text-xs font-mono text-stone-500 uppercase tracking-widest">
+        <a href="/humidor" class="hover:text-gold transition">Dashboard</a>
+        <span>/</span>
+        <span class="text-gold-dim">Member Profile</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+
+        <!-- Digital Membership Card (Left Column) -->
+        <div class="md:col-span-5 space-y-8">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-gold mb-4">Membership Card</h2>
+
+            <div
+                class="relative bg-gradient-to-br from-[#1a110d] to-[#2c1810] rounded-lg shadow-2xl border border-gold/30 p-6 overflow-hidden aspect-[1.58/1] flex flex-col justify-between group select-none">
+                <!-- Card Background Texture -->
+                <div
+                    class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] mix-blend-overlay pointer-events-none">
+                </div>
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-gold/10 rounded-full blur-3xl"></div>
+
+                <!-- Header -->
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <div class="text-xs text-gold/60 uppercase tracking-[0.2em]">Cigar Room</div>
+                        <div class="text-xs text-gold/40 font-serif italic">Est. 2026</div>
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-white/5 rounded-full border border-gold/20 flex items-center justify-center">
+                        <span class="text-2xl grayscale opacity-80">🍂</span>
+                    </div>
+                </div>
+
+                <!-- Member Info -->
+                <div class="relative z-10 space-y-1">
+                    <div class="text-[10px] text-stone-500 uppercase tracking-widest">Member Name</div>
+                    <div class="text-xl font-serif text-parchment truncate">{{ user.full_name or
+                        user.email.split('@')[0] }}</div>
+                </div>
+
+                <!-- Footer / ID -->
+                <div class="flex justify-between items-end relative z-10">
+                    <div>
+                        <div class="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Status</div>
+                        <div
+                            class="text-xs font-mono text-gold-dim border border-gold-dim/30 px-2 py-0.5 rounded-sm inline-block">
+                            FOUNDING MEMBER</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Member ID</div>
+                        <div class="text-2xl font-mono text-gold font-bold tracking-widest">#{{ "%04d" | format(user.id)
+                            }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p class="text-xs font-serif italic text-stone-500">
+                    "Present this digital card at partner lounges for exclusive benefits."
+                </p>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form (Right Column) -->
+        <div class="md:col-span-7 space-y-8">
+            <div class="flex justify-between items-end border-b border-gold-dim/10 pb-4">
+                <h1 class="text-3xl font-serif font-bold text-parchment">Personal Details</h1>
+            </div>
+
+            <form action="/auth/profile" method="POST" enctype="multipart/form-data" class="space-y-8">
+
+                <div class="flex items-center gap-6">
+                    <div
+                        class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gold-dim/30 bg-[#150d09]">
+                        {% if user.profile_image %}
+                        <img src="/{{ user.profile_image }}" class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-4xl opacity-20">👤</div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <label class="block text-xs font-mono text-gold-dim">Profile Portrait</label>
+                        <input type="file" name="profile_image" accept="image/*"
+                            class="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-semibold file:bg-gold-dim file:text-leather-dark hover:file:bg-gold transition cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-mono text-gold-dim">Full Name</label>
+                    <input type="text" name="full_name" value="{{ user.full_name or '' }}"
+                        class="w-full classic-input placeholder-stone-700">
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Phone Number</label>
+                        <input type="tel" name="phone" value="{{ user.phone or '' }}" placeholder="+1 (555) 000-0000"
+                            class="w-full classic-input placeholder-stone-700">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">City</label>
+                        <input type="text" name="city" value="{{ user.city or '' }}"
+                            class="w-full classic-input placeholder-stone-700">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-mono text-gold-dim">State / Province</label>
+                    <input type="text" name="state" value="{{ user.state or '' }}"
+                        class="w-full classic-input placeholder-stone-700">
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button type="submit"
+                        class="bg-gold-dim hover:bg-gold text-leather-dark px-8 py-3 rounded-sm font-bold uppercase tracking-widest text-xs transition shadow-lg">
+                        Update Profile
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
