@@ -95,10 +95,10 @@
                     <div class="hidden md:block">
                         <div class="flex items-baseline space-x-6">
                             <!-- Context switching Logic (Simple for now: Show relevant links based on path) -->
-                            {% if '/cigar' in request.url.path or '/analytics' in request.url.path %}
+                            {% if '/humidor' in request.url.path or '/analytics' in request.url.path %}
                             <span class="text-xs font-mono text-stone-600 uppercase mr-4">Domain: Cigar</span>
-                            <a href="/cigar" class="nav-link">Humidor</a>
-                            <a href="/cigar/community" class="nav-link">Lounge</a>
+                            <a href="/humidor" class="nav-link">Humidor</a>
+                            <a href="/humidor/community" class="nav-link">Lounge</a>
                             <a href="/analytics" class="nav-link">Ledger</a>
                             {% elif '/garage' in request.url.path %}
                             <span class="text-xs font-mono text-stone-600 uppercase mr-4">Domain: Garage</span>

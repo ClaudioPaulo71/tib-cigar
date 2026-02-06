@@ -45,7 +45,7 @@
     {% if cigars %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for cigar in cigars %}
-        <a href="/cigar/{{ cigar.id }}"
+        <a href="/humidor/{{ cigar.id }}"
             class="group classic-panel rounded-lg relative transition-all duration-300 hover:-translate-y-1 hover:border-gold/50">
             <!-- Image Area -->
             <div class="aspect-[4/3] bg-[#1a0f0a] relative overflow-hidden rounded-t-lg border-b border-gold-dim/20">
@@ -117,7 +117,7 @@
             </form>
         </div>
 
-        <form action="/cigar/new" method="POST" enctype="multipart/form-data" class="space-y-8">
+        <form action="/humidor/new" method="POST" enctype="multipart/form-data" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                 <!-- Section 1: Identity -->
