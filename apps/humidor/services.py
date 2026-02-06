@@ -94,6 +94,9 @@ class HumidorService:
         format: Optional[str] = None,
         wrapper: Optional[str] = None,
         wrapper_color: Optional[str] = None,
+        binder: Optional[str] = None,
+        filler: Optional[str] = None,
+        strength: Optional[str] = None,
         origin: Optional[str] = None,
         length_in: Optional[float] = None,
         ring_gauge: Optional[int] = None,
@@ -106,7 +109,9 @@ class HumidorService:
             brand=brand, line=line, vitola=vitola,
             quantity=quantity, price_paid=price_paid,
             format=format,
-            wrapper=wrapper, wrapper_color=wrapper_color, origin=origin,
+            wrapper=wrapper, wrapper_color=wrapper_color, 
+            binder=binder, filler=filler, strength=strength,
+            origin=origin,
             length_in=length_in, ring_gauge=ring_gauge,
             purchase_date=purchase_date,
             aging_since=purchase_date
@@ -136,6 +141,9 @@ class HumidorService:
         format: Optional[str] = None,
         wrapper: Optional[str] = None,
         wrapper_color: Optional[str] = None,
+        binder: Optional[str] = None,
+        filler: Optional[str] = None,
+        strength: Optional[str] = None,
         origin: Optional[str] = None,
         length_in: Optional[float] = None,
         ring_gauge: Optional[int] = None,
@@ -153,6 +161,9 @@ class HumidorService:
         cigar.format = format
         cigar.wrapper = wrapper
         cigar.wrapper_color = wrapper_color
+        cigar.binder = binder
+        cigar.filler = filler
+        cigar.strength = strength
         cigar.origin = origin
         cigar.length_in = length_in
         cigar.ring_gauge = ring_gauge

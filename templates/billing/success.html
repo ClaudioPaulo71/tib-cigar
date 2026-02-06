@@ -1,0 +1,25 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[60vh] text-center animate-[fadeIn_0.5s_ease-out]">
+
+    <div class="mb-8 p-6 rounded-full bg-green-900/20 border border-green-500/30 text-green-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+    </div>
+
+    <h1 class="text-5xl font-serif text-gold italic mb-4">Welcome to the Club.</h1>
+    <p class="text-stone-400 font-serif text-xl italic max-w-lg mx-auto leading-relaxed">
+        Your membership is now active. You have successfully unlocked the full capabilities of The Cigar Room.
+    </p>
+
+    <div class="h-px w-24 bg-gold/30 mx-auto my-8"></div>
+
+    <a href="/dashboard"
+        class="classic-button inline-flex items-center px-8 py-3 bg-gold text-stone-900 font-bold uppercase tracking-widest rounded hover:bg-gold-light transition-colors">
+        Enter the Lounge
+    </a>
+
+</div>
+{% endblock %}

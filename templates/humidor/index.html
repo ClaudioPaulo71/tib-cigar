@@ -45,7 +45,7 @@
     {% if cigars %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for cigar in cigars %}
-        <a href="/humidor/{{ cigar.id }}"
+        <a href="/cigar/{{ cigar.id }}"
             class="group classic-panel rounded-lg relative transition-all duration-300 hover:-translate-y-1 hover:border-gold/50">
             <!-- Image Area -->
             <div class="aspect-[4/3] bg-[#1a0f0a] relative overflow-hidden rounded-t-lg border-b border-gold-dim/20">
@@ -117,7 +117,7 @@
             </form>
         </div>
 
-        <form action="/humidor/new" method="POST" enctype="multipart/form-data" class="space-y-8">
+        <form action="/cigar/new" method="POST" enctype="multipart/form-data" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                 <!-- Section 1: Identity -->
@@ -160,9 +160,10 @@
                                 <option value="Culebra">Culebra</option>
                             </select>
                         </div>
-                        <div class="space-y-1">
-                            <label class="block text-xs font-mono text-gold-dim">Vitola Name</label>
-                            <input type="text" name="vitola" required placeholder="e.g. Robusto" list="vitolas-list"
+                        <div class="space-y-1 opacity-50">
+                            <!-- Optional/Deprecated -->
+                            <label class="block text-xs font-mono text-gold-dim">Vitola Name (Optional)</label>
+                            <input type="text" name="vitola" placeholder="e.g. Robusto" list="vitolas-list"
                                 autocomplete="off" class="w-full classic-input placeholder-stone-700">
                         </div>
                     </div>
@@ -181,9 +182,9 @@
                     </div>
                 </div>
 
-                <!-- Section 3: Wrapper -->
+                <!-- Section 3: Blend Profile -->
                 <div class="space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Wrapper</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-stone-500 mb-4">Blend Profile</h4>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1">
                             <label class="block text-xs font-mono text-gold-dim">Wrapper Type</label>
@@ -202,6 +203,36 @@
                                 <option value="Maduro">Maduro</option>
                                 <option value="Oscuro">Oscuro</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Binder</label>
+                            <input type="text" name="binder" placeholder="e.g. Dominican"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-mono text-gold-dim">Filler</label>
+                            <input type="text" name="filler" placeholder="e.g. Nicaraguan"
+                                class="w-full classic-input placeholder-stone-700">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-mono text-gold-dim">Strength</label>
+                        <div class="flex gap-4 pt-2">
+                            {% for s in ['Mild', 'Mild-Medium', 'Medium', 'Medium-Full', 'Full'] %}
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="radio" name="strength" value="{{ s }}" class="peer sr-only">
+                                <div
+                                    class="w-3 h-3 border border-gold-dim rounded-full peer-checked:bg-gold mr-2 group-hover:border-gold transition">
+                                </div>
+                                <span
+                                    class="text-xs text-stone-500 peer-checked:text-parchment group-hover:text-stone-400 transition">{{
+                                    s }}</span>
+                            </label>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

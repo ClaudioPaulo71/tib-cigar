@@ -14,7 +14,14 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
 
+from starlette.middleware.sessions import SessionMiddleware
+import os
+
 app = FastAPI(lifespan=lifespan)
+
+# Secret Key for Session (Should be env var in prod)
+SECRET_KEY = os.getenv("SECRET_KEY", "super_secret_dev_key_12345")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 from fastapi import Request, HTTPException, Depends
 from fastapi.responses import RedirectResponse
@@ -42,14 +49,15 @@ from apps.auth.webhook_router import router as webhook_router
 app.include_router(auth_router)
 app.include_router(humidor_router)
 app.include_router(analytics_router)
-app.include_router(webhook_router)
 
-# Rota raiz (Landing Page)
+app.include_router(webhook_router)
+# from apps.billing.router import router as billing_router
+# app.include_router(billing_router)
+
+# Rota raiz (Portal)
 @app.get("/")
 def home(request: Request, user: User = Depends(get_current_user)):
-    if user:
-        return RedirectResponse(url="/humidor")
-    return templates.TemplateResponse("landing.html", {"request": request, "user": user})
+    return templates.TemplateResponse("portal.html", {"request": request, "user": user})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -1,0 +1,71 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12 px-4 animate-[fadeIn_0.5s_ease-out]">
+
+    <!-- Header -->
+    <div class="text-center mb-16 space-y-4">
+        <h1 class="text-5xl font-serif text-gold italic">Membership</h1>
+        <p class="text-stone-500 font-serif text-lg italic">Unlock the full potential of your digital ledger.</p>
+        <div class="h-px w-24 bg-gold/30 mx-auto mt-6"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+
+        <!-- Free Tier -->
+        <div class="classic-panel p-8 rounded-lg opacity-70 hover:opacity-100 transition duration-300">
+            <h3 class="text-2xl font-serif text-parchment mb-2">Guest</h3>
+            <div class="text-4xl font-bold text-stone-400 mb-6">$0</div>
+            <ul class="space-y-4 text-stone-400 text-sm mb-8 font-mono">
+                <li class="flex items-center"><span class="text-gold mr-2">✓</span> Standard Humidor</li>
+                <li class="flex items-center"><span class="text-gold mr-2">✓</span> Basic Logging</li>
+                <li class="flex items-center opacity-50"><span class="mr-2">✕</span> Analytics Dashboard</li>
+                <li class="flex items-center opacity-50"><span class="mr-2">✕</span> Priority Support</li>
+            </ul>
+            <button disabled
+                class="w-full border border-stone-700 text-stone-500 py-3 rounded text-xs font-bold uppercase tracking-widest cursor-not-allowed">
+                Current Plan
+            </button>
+        </div>
+
+        <!-- Premium Tier -->
+        <div class="classic-panel p-8 rounded-lg border-gold/50 relative overflow-hidden group">
+            <div
+                class="absolute top-0 right-0 bg-gold text-stone-900 text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
+                Recommended</div>
+
+            <h3 class="text-3xl font-serif text-gold mb-2 italic">Aficionado</h3>
+            <div class="text-5xl font-bold text-parchment mb-6">$9<span
+                    class="text-lg text-stone-500 font-normal">/mo</span></div>
+
+            <ul class="space-y-4 text-parchment text-sm mb-8 font-mono">
+                <li class="flex items-center"><span class="text-gold mr-2">✓</span> Unlimited Humidor Storage</li>
+                <li class="flex items-center"><span class="text-gold mr-2">✓</span> Full Analytics Suite</li>
+                <li class="flex items-center"><span class="text-gold mr-2">✓</span> Sensory Taste Profile</li>
+                <li class="flex items-center"><span class="text-gold mr-2">✓</span> Early Access to Features</li>
+            </ul>
+
+            {% if user.subscription_status == 'active' %}
+            <a href="/billing/portal"
+                class="block w-full text-center bg-stone-800 hover:bg-stone-700 text-gold border border-gold py-3 rounded text-xs font-bold uppercase tracking-widest transition-all">
+                Manage Subscription
+            </a>
+            {% else %}
+            <form action="/billing/checkout" method="POST">
+                <button type="submit"
+                    class="w-full bg-gold hover:bg-gold-light text-stone-900 py-3 rounded text-xs font-bold uppercase tracking-widest shadow-lg hover:shadow-gold/20 transition-all transform hover:-translate-y-1">
+                    Become a Member
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Assurance -->
+    <div class="text-center mt-12 text-stone-600 text-xs font-mono">
+        <p>SECURE PAYMENTS POWERED BY STRIPE &bull; CANCEL ANYTIME</p>
+    </div>
+
+</div>
+{% endblock %}

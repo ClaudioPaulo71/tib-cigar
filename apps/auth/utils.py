@@ -1,27 +1,24 @@
-import bcrypt
-from datetime import datetime, timedelta
-from typing import Optional
-from jose import jwt
-from config import settings
+import os
+from authlib.integrations.starlette_client import OAuth
+from dotenv import load_dotenv
 
-def verify_password(plain_password, hashed_password):
-    if not isinstance(plain_password, bytes):
-        plain_password = plain_password.encode('utf-8')
-    if not isinstance(hashed_password, bytes):
-        hashed_password = hashed_password.encode('utf-8')
-    return bcrypt.checkpw(plain_password, hashed_password)
+load_dotenv()
 
-def get_password_hash(password):
-    if not isinstance(password, bytes):
-        password = password.encode('utf-8')
-    return bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8')
+oauth = OAuth()
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
+AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID", "")
+AUTH0_CLIENT_SECRET = os.getenv("AUTH0_CLIENT_SECRET", "")
+
+if AUTH0_DOMAIN and AUTH0_CLIENT_ID and AUTH0_CLIENT_SECRET:
+    oauth.register(
+        "auth0",
+        client_id=AUTH0_CLIENT_ID,
+        client_secret=AUTH0_CLIENT_SECRET,
+        client_kwargs={
+            "scope": "openid profile email",
+        },
+        server_metadata_url=f'https://{AUTH0_DOMAIN}/.well-known/openid-configuration'
+    )
+else:
+    print("WARNING: Auth0 Environment Variables missing. OAuth will not work.")

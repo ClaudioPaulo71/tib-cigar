@@ -10,11 +10,27 @@ from apps.humidor.services import HumidorService
 from apps.auth.deps import get_current_user, require_user
 from apps.auth.models import User
 
-router = APIRouter(prefix="/humidor", tags=["humidor"])
+router = APIRouter(prefix="/cigar", tags=["cigar"])
 templates = Jinja2Templates(directory="templates")
 
 def get_service(session: Session = Depends(get_session)) -> HumidorService:
     return HumidorService(session)
+
+MAX_FILE_SIZE = 5 * 1024 * 1024 # 5 MB
+
+async def validate_image_size(files: List[UploadFile]):
+    for file in files:
+        if file.filename:
+            # Check Content-Length header first if available
+            # Note: This can be spoofed, but it's a first line of defense
+            # A more robust way requires reading the file which consumes the stream
+            # For now, we trust standard browser behavior or catch it during read
+            file.file.seek(0, 2)
+            size = file.file.tell()
+            file.file.seek(0)
+            if size > MAX_FILE_SIZE:
+                from fastapi import HTTPException
+                raise HTTPException(status_code=413, detail=f"File {file.filename} exceeds maximum size of 5MB")
 
 # --- COMMUNITY ---
 @router.get("/community")
@@ -58,7 +74,7 @@ def add_from_community(
     # Redirect to the main list or the new cigar detail (we'd need ID but create_cigar returns it)
     # Ideally should redirect to edit page to set quantity.
     # For now, redirect to humidor list.
-    return RedirectResponse(url="/humidor", status_code=303)
+    return RedirectResponse(url="/cigar", status_code=303)
 
 # 1. List Cigars
 @router.get("/")
@@ -84,15 +100,18 @@ def list_cigars(
 
 # 2. Add New Cigar
 @router.post("/new")
-def create_cigar(
+async def create_cigar(
     brand: str = Form(...),
     line: str = Form(...),
-    vitola: str = Form(...),
+    vitola: str = Form(None), # Made optional
     quantity: int = Form(...),
     price_paid: float = Form(default=0.0),
     format: str = Form(default=None),
     wrapper: str = Form(default=None),
     wrapper_color: str = Form(default=None),
+    binder: str = Form(default=None),
+    filler: str = Form(default=None),
+    strength: str = Form(default=None),
     origin: str = Form(default=None),
     length_in: float = Form(default=None),
     ring_gauge: int = Form(default=None),
@@ -101,6 +120,8 @@ def create_cigar(
     service: HumidorService = Depends(get_service),
     user: User = Depends(require_user)
 ):
+    await validate_image_size(photos)
+
     p_date = date.fromisoformat(purchase_date) if purchase_date else None
     
     # Filter empty files
@@ -109,24 +130,29 @@ def create_cigar(
     service.create_cigar(
         user=user, brand=brand, line=line, vitola=vitola,
         quantity=quantity, price_paid=price_paid,
-        format=format, wrapper=wrapper, wrapper_color=wrapper_color, origin=origin,
+        format=format, wrapper=wrapper, wrapper_color=wrapper_color, 
+        binder=binder, filler=filler, strength=strength,
+        origin=origin,
         length_in=length_in, ring_gauge=ring_gauge,
         purchase_date=p_date, photos=valid_photos
     )
-    return RedirectResponse(url="/humidor", status_code=303)
+    return RedirectResponse(url="/cigar", status_code=303)
 
 # 3. Update Cigar
 @router.post("/{cigar_id}/update")
-def update_cigar(
+async def update_cigar(
     cigar_id: int,
     brand: str = Form(...),
     line: str = Form(...),
-    vitola: str = Form(...),
+    vitola: str = Form(None),
     quantity: int = Form(...),
     price_paid: float = Form(default=0.0),
     format: str = Form(default=None),
     wrapper: str = Form(default=None),
     wrapper_color: str = Form(default=None),
+    binder: str = Form(default=None),
+    filler: str = Form(default=None),
+    strength: str = Form(default=None),
     origin: str = Form(default=None),
     length_in: float = Form(default=None),
     ring_gauge: int = Form(default=None),
@@ -134,13 +160,17 @@ def update_cigar(
     service: HumidorService = Depends(get_service),
     user: User = Depends(require_user)
 ):
+    await validate_image_size(photos)
+    
     valid_photos = [p for p in photos if p.filename]
     
     service.update_cigar(
         user=user, cigar_id=cigar_id,
         brand=brand, line=line, vitola=vitola,
         quantity=quantity, price_paid=price_paid,
-        format=format, wrapper=wrapper, wrapper_color=wrapper_color, origin=origin,
+        format=format, wrapper=wrapper, wrapper_color=wrapper_color, 
+        binder=binder, filler=filler, strength=strength,
+        origin=origin,
         length_in=length_in, ring_gauge=ring_gauge,
         photos=valid_photos
     )

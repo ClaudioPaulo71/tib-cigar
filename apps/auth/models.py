@@ -8,7 +8,8 @@ if TYPE_CHECKING:
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True, index=True)
-    hashed_password: str
+    hashed_password: Optional[str] = None
+    external_id: Optional[str] = Field(default=None, index=True) # Auth0 Sub ID
     is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 

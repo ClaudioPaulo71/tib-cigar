@@ -1,0 +1,65 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[80vh] text-center animate-[fadeIn_1s_ease-out]">
+
+    <!-- Main Branding -->
+    <div class="mb-16 space-y-4">
+        <h1
+            class="text-6xl md:text-8xl font-serif font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-gold via-parchment to-gold drop-shadow-sm">
+            TIB USA
+        </h1>
+        <div class="h-px w-32 bg-gold-dim mx-auto opacity-50"></div>
+        <p class="text-xl text-stone-500 font-serif italic tracking-wide">Select your domain.</p>
+    </div>
+
+    <!-- App Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl px-4">
+
+        <!-- CIGAR ROOM -->
+        <a href="/cigar"
+            class="group relative block h-80 classic-panel hover:border-gold/60 transition-all duration-500 hover:-translate-y-2">
+            <div class="h-full flex flex-col items-center justify-center p-8 space-y-6">
+                <span class="text-6xl opacity-70 group-hover:scale-110 transition duration-500">🍂</span>
+                <h2 class="text-3xl font-serif font-bold text-parchment group-hover:text-gold transition">Cigar Room
+                </h2>
+                <p class="text-stone-500 font-serif text-sm italic max-w-xs mx-auto">
+                    Inventory & Sensory Ledger
+                </p>
+            </div>
+        </a>
+
+        <!-- ARMORY -->
+        <a href="/armory"
+            class="group relative block h-80 classic-panel hover:border-gold/60 transition-all duration-500 hover:-translate-y-2">
+            <div class="h-full flex flex-col items-center justify-center p-8 space-y-6">
+                <span class="text-6xl opacity-70 group-hover:scale-110 transition duration-500">🛡️</span>
+                <h2 class="text-3xl font-serif font-bold text-parchment group-hover:text-gold transition">The Armory
+                </h2>
+                <p class="text-stone-500 font-serif text-sm italic max-w-xs mx-auto">
+                    Firearms & Range Logs
+                </p>
+            </div>
+        </a>
+
+        <!-- GARAGE -->
+        <a href="/garage"
+            class="group relative block h-80 classic-panel hover:border-gold/60 transition-all duration-500 hover:-translate-y-2">
+            <div class="h-full flex flex-col items-center justify-center p-8 space-y-6">
+                <span class="text-6xl opacity-70 group-hover:scale-110 transition duration-500">🏎️</span>
+                <h2 class="text-3xl font-serif font-bold text-parchment group-hover:text-gold transition">The Garage
+                </h2>
+                <p class="text-stone-500 font-serif text-sm italic max-w-xs mx-auto">
+                    Fleet Management & Maintenance
+                </p>
+            </div>
+        </a>
+
+    </div>
+
+    <div class="mt-16 opacity-50">
+        <span class="text-xs font-mono text-gold-dim tracking-[0.3em] uppercase">Private Safe System</span>
+    </div>
+
+</div>
+{% endblock %}

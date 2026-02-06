@@ -23,12 +23,15 @@ class Cigar(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     brand: str
     line: str
-    vitola: str
+    vitola: Optional[str] = None # Deprecated in favor of format/dimensions
     
     # Enhanced Properties
     format: Optional[str] = None # Parejo, Torpedo, Perfecto, etc
-    wrapper: Optional[str] = None # Wrapper Name (e.g. Habano)
-    wrapper_color: Optional[str] = None # Maduro, Oscuro, Connecticut...
+    wrapper: Optional[str] = None # Wrapper Type (e.g. Habano, Connecticut)
+    binder: Optional[str] = None
+    filler: Optional[str] = None
+    strength: Optional[str] = None # Mild, Medium, Full
+    wrapper_color: Optional[str] = None # Maduro, Oscuro, etc
     origin: Optional[str] = None
     
     length_in: Optional[float] = None

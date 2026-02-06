@@ -83,19 +83,32 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center">
-                    <a href="/" class="flex flex-col items-start group">
+                    <a href="/" class="flex flex-col items-start group mr-8" title="Switch Domain">
                         <span
-                            class="font-serif text-2xl font-bold tracking-widest text-gold group-hover:text-gold-light transition">CIGAR
-                            ROOM</span>
+                            class="font-serif text-2xl font-bold tracking-widest text-gold group-hover:text-gold-light transition">TIB
+                            USA</span>
                         <span
-                            class="text-[10px] uppercase tracking-[0.2em] text-stone-500 group-hover:text-gold-dim transition">Est.
-                            2026</span>
+                            class="text-[10px] uppercase tracking-[0.2em] text-stone-500 group-hover:text-gold-dim transition">Private
+                            System</span>
                     </a>
-                    <div class="hidden md:block ml-16">
-                        <div class="flex items-baseline space-x-8">
-                            <a href="/humidor" class="nav-link">The Humidor</a>
-                            <a href="/humidor/community" class="nav-link">The Lounge</a>
+
+                    <div class="hidden md:block">
+                        <div class="flex items-baseline space-x-6">
+                            <!-- Context switching Logic (Simple for now: Show relevant links based on path) -->
+                            {% if '/cigar' in request.url.path or '/analytics' in request.url.path %}
+                            <span class="text-xs font-mono text-stone-600 uppercase mr-4">Domain: Cigar</span>
+                            <a href="/cigar" class="nav-link">Humidor</a>
+                            <a href="/cigar/community" class="nav-link">Lounge</a>
                             <a href="/analytics" class="nav-link">Ledger</a>
+                            {% elif '/garage' in request.url.path %}
+                            <span class="text-xs font-mono text-stone-600 uppercase mr-4">Domain: Garage</span>
+                            <a href="/garage" class="nav-link">Fleet</a>
+                            {% elif '/armory' in request.url.path %}
+                            <span class="text-xs font-mono text-stone-600 uppercase mr-4">Domain: Armory</span>
+                            <a href="/armory" class="nav-link">Vault</a>
+                            {% else %}
+                            <!-- Portal View -->
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -159,8 +172,11 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="border-t border-gold-dim/10 py-8 text-center text-stone-600 text-xs font-mono relative z-10">
+    <footer
+        class="border-t border-gold-dim/10 py-8 text-center text-stone-600 text-xs font-mono relative z-10 space-y-2">
         <p>&copy; 2026 Cigar Room. Purveyors of Fine Software.</p>
+        <p class="text-stone-700">Questions? <a href="mailto:contact@tib-usa.com"
+                class="text-gold-dim hover:text-gold transition">contact@tib-usa.com</a></p>
     </footer>
 
 </body>
