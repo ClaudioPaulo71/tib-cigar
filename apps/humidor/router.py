@@ -10,7 +10,7 @@ from apps.humidor.services import HumidorService
 from apps.auth.deps import get_current_user, require_user
 from apps.auth.models import User
 
-router = APIRouter(prefix="/cigar", tags=["cigar"])
+router = APIRouter(prefix="/humidor", tags=["humidor"])
 templates = Jinja2Templates(directory="templates")
 
 def get_service(session: Session = Depends(get_session)) -> HumidorService:
@@ -74,7 +74,7 @@ def add_from_community(
     # Redirect to the main list or the new cigar detail (we'd need ID but create_cigar returns it)
     # Ideally should redirect to edit page to set quantity.
     # For now, redirect to humidor list.
-    return RedirectResponse(url="/cigar", status_code=303)
+    return RedirectResponse(url="/humidor", status_code=303)
 
 # 1. List Cigars
 @router.get("/")
@@ -136,7 +136,7 @@ async def create_cigar(
         length_in=length_in, ring_gauge=ring_gauge,
         purchase_date=p_date, photos=valid_photos
     )
-    return RedirectResponse(url="/cigar", status_code=303)
+    return RedirectResponse(url="/humidor", status_code=303)
 
 # 3. Update Cigar
 @router.post("/{cigar_id}/update")
