@@ -1,8 +1,10 @@
 from sqlmodel import SQLModel, create_engine, Session
 
+import os
+
 # Configuração do Banco de Dados
 sqlite_file_name = "tib_saas.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+sqlite_url = os.getenv("DATABASE_URL", f"sqlite:///{sqlite_file_name}")
 
 # check_same_thread=False é necessário para SQLite com FastAPI
 connect_args = {"check_same_thread": False}

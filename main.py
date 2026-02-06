@@ -56,8 +56,8 @@ app.include_router(webhook_router)
 
 # Rota raiz (Portal)
 @app.get("/")
-def home(request: Request, user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("portal.html", {"request": request, "user": user})
+def home(request: Request):
+    return RedirectResponse(url="/humidor")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
