@@ -4,21 +4,27 @@ services:
     build: .
     container_name: tib_cigar_app
     restart: always
-    ports:
-      - "8002:8000"
+    # ports:
+    #   - "8002:8000" # Exposed via Traefik now
     volumes:
       - ./data:/app/data # Persist Database
       - ./static/uploads:/app/static/uploads # Persist User Uploads
     env_file:
       - .env
     environment:
-      - DATABASE_URL=sqlite:///data/tib_saas.db
+      - DATABASE_URL=sqlite:///data/cigar_saas.db
     networks:
-      - web_network
+      - tib_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cigar.rule=Host(`cigar.tib-usa.app`)"
+      - "traefik.http.routers.cigar.entrypoints=websecure"
+      - "traefik.http.routers.cigar.tls.certresolver=myresolver"
+      - "traefik.http.services.cigar.loadbalancer.server.port=8000"
 
 networks:
-  web_network:
-
+  tib_network:
+    external: true
 
 volumes:
   data:
